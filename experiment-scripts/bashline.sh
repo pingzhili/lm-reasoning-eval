@@ -11,14 +11,14 @@ WANDB_NAME="qwen-2.5-32b"
 # AIME 2024
 TASK=aime24
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details
+    --output-dir $OUTPUT_DIR --save-details --wandb > $MODEL_$TASK_output.log 2>&1
 
 # MATH
 TASK=math_500
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details
+    --output-dir $OUTPUT_DIR --save-details --wandb > $MODEL_$TASK_output.log 2>&1
 
 # GPQA Diamond
 TASK=gsm8k
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details
+    --output-dir $OUTPUT_DIR --save-details --wandb > $MODEL_$TASK_output.log 2>&1
