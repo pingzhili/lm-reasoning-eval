@@ -240,6 +240,7 @@ class EvaluationTracker:
             column_names = dataset.column_names
             if "id" in dataset.column_names:
                 column_names = [t for t in dataset.column_names if t != "id"]
+            logger.info(f"Saving columns: {column_names} for task: {task_name}")
 
             # Sort column names to make it easier later
             dataset = dataset.select_columns(sorted(column_names))
