@@ -387,7 +387,10 @@ class VLLMModel(LightevalModel):
         generate: bool = True,
     ) -> list:
         """Contains the actual logic of the generation."""
-        sampling_params = SamplingParams(**self._config.generation_parameters.to_vllm_dict())
+        # remove "returns_logits" from arg dict to SamplingParams
+        sampling_params_args = {k: v for k, v in self._config.generation_parameters.to_vllm_dict().items() if k != "returns_logits"}
+        sampling_params = SamplingParams(**sampling_params_args)
+        # sampling_params = SamplingParams(**self._config.generation_parameters.to_vllm_dict())
 
         if generate:
             sampling_params.n = num_samples
