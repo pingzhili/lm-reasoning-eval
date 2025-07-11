@@ -403,7 +403,7 @@ class VLLMModel(LightevalModel):
             sampling_params.n = num_samples
             sampling_params.max_tokens = max_new_tokens
             sampling_params.stop = stop_tokens
-            sampling_params.logprobs = 20 if returns_logits else 0
+            sampling_params.logprobs = 10 if returns_logits else 0
             if num_samples > 1 and sampling_params.temperature == 0:
                 raise ValueError(
                     "num_samples > 1 is not supported with temperature=0, please set temperature > 0 or use non sampling metrics."
