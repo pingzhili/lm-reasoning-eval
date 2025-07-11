@@ -375,11 +375,11 @@ aime24 = LightevalTaskConfig(
     generation_size=None,
     metrics=[
         Metrics.math_pass_at_1_1n,
-        Metrics.math_pass_at_1_4n,
-        Metrics.math_pass_at_1_8n,
-        Metrics.math_pass_at_1_16n,
-        Metrics.math_pass_at_1_32n,
-        Metrics.math_pass_at_1_64n,
+        # Metrics.math_pass_at_1_4n,
+        # Metrics.math_pass_at_1_8n,
+        # Metrics.math_pass_at_1_16n,
+        # Metrics.math_pass_at_1_32n,
+        # Metrics.math_pass_at_1_64n,
     ],
     version=2,
 )
