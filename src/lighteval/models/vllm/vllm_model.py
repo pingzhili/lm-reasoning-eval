@@ -168,6 +168,8 @@ class VLLMModelConfig(ModelConfig):
     use_chat_template: bool = False
     is_async: bool = False  # Whether to use the async version or sync version of the model
 
+    enable_thinking: bool = True # if you can think, think
+
 
 class VLLMModel(LightevalModel):
     def __init__(
@@ -197,7 +199,9 @@ class VLLMModel(LightevalModel):
         self.model_info = ModelInfo(model_name=self.model_name, model_sha=self.model_sha)
         self.pairwise_tokenization = config.pairwise_tokenization
 
-        self.prompt_manager = PromptManager(self.use_chat_template, self.tokenizer, config.system_prompt)
+        self.prompt_manager = PromptManager(
+            self.use_chat_template, self.tokenizer, config.system_prompt, enable_thinking=config.enable_thinking
+        )
 
     @property
     def tokenizer(self):
@@ -362,7 +366,10 @@ class VLLMModel(LightevalModel):
 
             for i, vllm_output in enumerate(vllm_outputs):
                 output_token_ids = [outputs.token_ids for outputs in vllm_output.outputs]
-                output_logprobs = [outputs.logprobs for outputs in vllm_output.outputs]
+                output_logprobs = [
+                    [{str(idx): lp for idx, lp in token_logprobs.items()} for token_logprobs in outputs.logprobs]
+                    for outputs in vllm_output.outputs
+                ]
                 result = [output.text for output in vllm_output.outputs]
                 input_token_ids = vllm_output.prompt_token_ids
 
