@@ -215,11 +215,14 @@ class EvaluationTracker:
         """Saves the experiment information and results to files, and to the hub if requested."""
         logger.info("Saving experiment tracker")
         date_id = datetime.now().isoformat().replace(":", "-")
+        logger.debug(f"Date: {date_id}")
 
         # We first prepare data to save
         config_general = asdict(self.general_config_logger)
+        logger.debug(f"General config size: {len(config_general)}")
         # We remove the config from logging, which contains context/accelerator objects
         config_general.pop("config")
+        logger.debug(f"General config size after pop: {len(config_general)}")
 
         results_dict = {
             "config_general": config_general,
@@ -229,6 +232,7 @@ class EvaluationTracker:
             "summary_tasks": self.details_logger.compiled_details,
             "summary_general": asdict(self.details_logger.compiled_details_over_all_tasks),
         }
+        logger.debug(f"General results keys: {results_dict.keys()}")
 
         # Create the details datasets for later upload
         details_datasets: dict[str, Dataset] = {}
