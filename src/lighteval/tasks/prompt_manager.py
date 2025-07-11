@@ -45,6 +45,7 @@ class PromptManager:
         self.tokenizer = tokenizer
         self.system_prompt = system_prompt  # System prompt to be used in chat templates
         self.enable_thinking = enable_thinking
+        logger.info(f"Setting enable_thinking to {enable_thinking}")
 
     def prepare_prompt(self, doc: Doc) -> str:
         """Prepare a prompt from a document, either using chat template or plain text format."""
