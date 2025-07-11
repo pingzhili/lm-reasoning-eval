@@ -11,16 +11,16 @@ OUTPUT_DIR=data/evals/$MODEL-nothinking-debug
 TASK=aime24
 mkdir -p $OUTPUT_DIR/$TASK # for logging
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details --wandb --max-samples 4 2>&1 | tee $OUTPUT_DIR/$TASK/output.log
+    --output-dir $OUTPUT_DIR --save-details --wandb 2>&1 | tee $OUTPUT_DIR/$TASK/output.log
 
 # MATH
 TASK=math_500
 mkdir -p $OUTPUT_DIR/$TASK # for logging
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details --wandb --max-samples 4 2>&1 | tee $OUTPUT_DIR/$TASK/output.log
+    --output-dir $OUTPUT_DIR --save-details --wandb 2>&1 | tee $OUTPUT_DIR/$TASK/output.log
 
 # GPQA Diamond
 TASK=gsm8k
 mkdir -p $OUTPUT_DIR/$TASK # for logging
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details --wandb --max-samples 4 2>&1 | tee $OUTPUT_DIR/$TASK/output.log
+    --output-dir $OUTPUT_DIR --save-details --wandb 2>&1 | tee $OUTPUT_DIR/$TASK/output.log

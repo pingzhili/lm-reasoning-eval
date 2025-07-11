@@ -5,6 +5,7 @@ from IPython.display import HTML, display
 from transformers import AutoTokenizer
 import html as html_module
 from fire import Fire
+import pandas as pd
 
 
 def visualize_token_logprobs(string, logprob_list, tokenizer_name="Qwen/Qwen3-32B", method="html"):
@@ -318,5 +319,7 @@ def save_visualization(html_content, filename="token_visualization.html"):
     print(f"Visualization saved to {filename}")
 
 
-def main():
-    pass
+def main(detail_file_path: str, sample_id: int = 0):
+    df = pd.read_parquet(detail_file_path)
+    sample = df.iloc[0]
+

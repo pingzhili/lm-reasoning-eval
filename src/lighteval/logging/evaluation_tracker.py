@@ -48,6 +48,7 @@ from lighteval.utils.utils import obj_to_markdown
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 if is_nanotron_available():
     from nanotron.config import GeneralArgs  # type: ignore

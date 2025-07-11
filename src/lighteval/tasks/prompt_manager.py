@@ -33,7 +33,6 @@ from lighteval.utils.utils import as_list
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 if TYPE_CHECKING:
