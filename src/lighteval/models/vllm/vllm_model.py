@@ -317,6 +317,7 @@ class VLLMModel(LightevalModel):
                 stop_tokens = split[0].stop_sequences or []
 
             max_new_tokens = self._config.generation_parameters.max_new_tokens or split[0].generation_size
+            returns_logits = self._config.generation_parameters.returns_logits
             num_samples = split[0].num_samples
 
             context = [self.prompt_manager.prepare_prompt(doc) for doc in split]
@@ -355,12 +356,13 @@ class VLLMModel(LightevalModel):
                 inputs=inputs,
                 max_new_tokens=max_new_tokens,
                 stop_tokens=stop_tokens,
-                returns_logits=False,
+                returns_logits=returns_logits,
                 num_samples=num_samples,
             )
 
             for i, vllm_output in enumerate(vllm_outputs):
                 output_token_ids = [outputs.token_ids for outputs in vllm_output.outputs]
+                output_logprobs = [outputs.logprobs for outputs in vllm_output.outputs]
                 result = [output.text for output in vllm_output.outputs]
                 input_token_ids = vllm_output.prompt_token_ids
 
@@ -369,6 +371,7 @@ class VLLMModel(LightevalModel):
                     text=result,
                     output_tokens=list(output_token_ids),
                     input_tokens=input_token_ids,
+                    logprobs=output_logprobs
                 )
                 results.append(cur_response)
 
@@ -390,7 +393,7 @@ class VLLMModel(LightevalModel):
             sampling_params.n = num_samples
             sampling_params.max_tokens = max_new_tokens
             sampling_params.stop = stop_tokens
-            sampling_params.logprobs = 1 if returns_logits else 0
+            sampling_params.logprobs = 100 if returns_logits else 0
             if num_samples > 1 and sampling_params.temperature == 0:
                 raise ValueError(
                     "num_samples > 1 is not supported with temperature=0, please set temperature > 0 or use non sampling metrics."
