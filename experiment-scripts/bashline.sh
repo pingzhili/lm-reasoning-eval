@@ -1,4 +1,4 @@
-export PYTHONPATH="${PYTHONPATH}:../src/lighteval"
+export PYTHONPATH="${PYTHONPATH}:./src"
 export CUDA_VISIBLE_DEVICES=0,1
 export WANDB_API_KEY=2b60f655a687ad1161d31f0002256865e1ace428
 export WANDB_PROJECT=llm-reasoning
