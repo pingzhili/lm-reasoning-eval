@@ -10,18 +10,18 @@ WANDB_NAME="qwen-2.5-32b"
 
 # AIME 2024
 TASK=aime24
-python -m lighteval.main_vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
     --use-chat-template \
     --output-dir $OUTPUT_DIR --save-details
 
 # MATH
 TASK=math_500
-python -m lighteval.main_vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
     --use-chat-template \
     --output-dir $OUTPUT_DIR --save-details
 
 # GPQA Diamond
 TASK=gsm8k
-python -m lighteval.main_vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
     --use-chat-template \
     --output-dir $OUTPUT_DIR --save-details
