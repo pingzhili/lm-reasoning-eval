@@ -238,7 +238,9 @@ class EvaluationTracker:
         details_datasets: dict[str, Dataset] = {}
         for task_name, task_details in self.details_logger.details.items():
             # Create a dataset from the dictionary - we force cast to str to avoid formatting problems for nested objects
+            logger.debug(f"Working on task: {task_name}")
             dataset = Dataset.from_list([asdict(detail) for detail in task_details])
+            logger.debug(f"Dataset size: {len(dataset)}")
 
             # We don't keep 'id' around if it's there
             column_names = dataset.column_names
