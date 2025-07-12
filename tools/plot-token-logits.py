@@ -8,7 +8,6 @@ from fire import Fire
 import pandas as pd
 from tqdm import tqdm
 from loguru import logger
-import os
 
 def visualize_token_logprobs(tokens, logprob_list, tokenizer_name="Qwen/Qwen3-32B", method="html"):
     """
