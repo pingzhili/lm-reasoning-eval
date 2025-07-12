@@ -1,5 +1,6 @@
 from vllm import LLM, SamplingParams
 from transformers import AutoTokenizer
+import pickle
 
 model = LLM("Qwen/Qwen3-8B")
 tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen3-8B")
@@ -14,4 +15,6 @@ requests = tokenizer.apply_chat_template(
 )
 sampling_params = SamplingParams(logprobs=10)
 outputs = model.generate(prompt_token_ids=requests, sampling_params=sampling_params)
-breakpoint()
+# save outputs
+with open('tmp_outputs.pkl', 'wb') as f:
+    pickle.dump(outputs, f)
