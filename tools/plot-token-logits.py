@@ -8,6 +8,7 @@ from fire import Fire
 import pandas as pd
 from tqdm import tqdm
 from loguru import logger
+import os
 
 def visualize_token_logprobs(tokens, logprob_list, tokenizer_name="Qwen/Qwen3-32B", method="html"):
     """
@@ -316,7 +317,8 @@ def save_visualization(html_content, filename="token_visualization.html"):
     logger.info(f"Visualization saved to {filename}")
 
 
-def main_single_sample(df, sample_id: int):
+def main_single_sample(df, sample_id: int, exp_name: str):
+
     metric = next(iter(df.metric[sample_id].values()))
     model_response = df.model_response[sample_id]
 
@@ -332,19 +334,19 @@ def main_single_sample(df, sample_id: int):
 
     # plot!
     enhanced_html = visualize_with_token_info(tokens, logprob_list)
-    save_visualization(enhanced_html, f"plots/token-logprobs-{sample_id}.html")
+    save_visualization(enhanced_html, f"plots/{exp_name}-logprobs-{sample_id}.html")
 
 
-def main(detail_file_path: str, sample_id: int = None):
+def main(detail_file_path: str, sample_id: int = None, exp_name: str="default"):
     df = pd.read_parquet(detail_file_path)
 
     if sample_id is None:
         num_samples = len(df.metric)
         logger.info(f"Default plotting all samples ({num_samples})")
         for idx in range(num_samples):
-            main_single_sample(df, idx)
+            main_single_sample(df, idx, exp_name=exp_name)
     else:
-        main_single_sample(df, sample_id)
+        main_single_sample(df, sample_id, exp_name=exp_name)
 
 
 if __name__ == "__main__":
