@@ -1,0 +1,4055 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Token Log Probability Visualization</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        
+    <style>
+        .token-viz { 
+            font-family: 'Courier New', monospace; 
+            font-size: 14px; 
+            line-height: 2.5; 
+            margin: 20px;
+        }
+        .token {
+            color: white;
+            display: inline-block;
+            padding: 4px 6px;
+            margin: 2px;
+            border-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.1);
+            cursor: pointer;
+            position: relative;
+        }
+        .token:hover {
+            border-color: #333;
+            transform: scale(1.05);
+            transition: all 0.2s;
+        }
+        .token-info {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .token:hover .token-info {
+            opacity: 1;
+        }
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+    <div class="token-viz">
+    
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            We
+            <span class="token-info">
+                Token #0 | ID: 1654 | LogProb: -0.0002
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;are
+            <span class="token-info">
+                Token #1 | ID: 525 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;given
+            <span class="token-info">
+                Token #2 | ID: 2661 | LogProb: -0.0017
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(179, 69, 69);">
+            :
+
+
+            <span class="token-info">
+                Token #3 | ID: 1447 | LogProb: -0.5114
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #4 | ID: 14085 | LogProb: -0.0010
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #5 | ID: 198 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #6 | ID: 59 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #7 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            _x
+            <span class="token-info">
+                Token #8 | ID: 3212 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(154, 27, 27);">
+            (y
+            <span class="token-info">
+                Token #9 | ID: 7021 | LogProb: -0.2019
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ^
+            <span class="token-info">
+                Token #10 | ID: 61 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            x
+            <span class="token-info">
+                Token #11 | ID: 87 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            )
+            <span class="token-info">
+                Token #12 | ID: 8 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #13 | ID: 284 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(151, 21, 21);">
+            &nbsp;
+            <span class="token-info">
+                Token #14 | ID: 220 | LogProb: -0.1602
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #15 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #16 | ID: 15 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 1, 1);">
+            &nbsp;\
+            <span class="token-info">
+                Token #17 | ID: 1124 | LogProb: -0.0124
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            quad
+            <span class="token-info">
+                Token #18 | ID: 31610 | LogProb: -0.0015
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #19 | ID: 1124 | LogProb: -0.0006
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            text
+            <span class="token-info">
+                Token #20 | ID: 1318 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {
+            <span class="token-info">
+                Token #21 | ID: 90 | LogProb: -0.0059
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            and
+            <span class="token-info">
+                Token #22 | ID: 437 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+            <span class="token-info">
+                Token #23 | ID: 92 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #24 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            quad
+            <span class="token-info">
+                Token #25 | ID: 31610 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #26 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #27 | ID: 839 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            _y
+            <span class="token-info">
+                Token #28 | ID: 4178 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            (x
+            <span class="token-info">
+                Token #29 | ID: 2075 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ^{
+            <span class="token-info">
+                Token #30 | ID: 47822 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #31 | ID: 19 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            y
+            <span class="token-info">
+                Token #32 | ID: 88 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            })
+            <span class="token-info">
+                Token #33 | ID: 5410 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #34 | ID: 284 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #35 | ID: 220 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #36 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #37 | ID: 15 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(142, 5, 5);">
+            
+
+            <span class="token-info">
+                Token #38 | ID: 198 | LogProb: -0.0405
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #39 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+
+            <span class="token-info">
+                Token #40 | ID: 271 | LogProb: -0.0053
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(182, 75, 75);">
+            We
+            <span class="token-info">
+                Token #41 | ID: 1654 | LogProb: -0.5516
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(155, 28, 28);">
+            &nbsp;are
+            <span class="token-info">
+                Token #42 | ID: 525 | LogProb: -0.2102
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(143, 7, 7);">
+            &nbsp;to
+            <span class="token-info">
+                Token #43 | ID: 311 | LogProb: -0.0523
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(151, 21, 21);">
+            &nbsp;find
+            <span class="token-info">
+                Token #44 | ID: 1477 | LogProb: -0.1613
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(176, 65, 65);">
+            &nbsp;$
+            <span class="token-info">
+                Token #45 | ID: 400 | LogProb: -0.4773
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(143, 8, 8);">
+            &nbsp;xy
+            <span class="token-info">
+                Token #46 | ID: 30784 | LogProb: -0.0626
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(142, 5, 5);">
+            &nbsp;$
+            <span class="token-info">
+                Token #47 | ID: 400 | LogProb: -0.0382
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(160, 37, 37);">
+            ,
+            <span class="token-info">
+                Token #48 | ID: 11 | LogProb: -0.2724
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(166, 47, 47);">
+            &nbsp;where
+            <span class="token-info">
+                Token #49 | ID: 1380 | LogProb: -0.3511
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(146, 13, 13);">
+            &nbsp;$
+            <span class="token-info">
+                Token #50 | ID: 400 | LogProb: -0.1003
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #51 | ID: 856 | LogProb: -0.0041
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(159, 35, 35);">
+            &nbsp;&gt;
+            <span class="token-info">
+                Token #52 | ID: 861 | LogProb: -0.2574
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #53 | ID: 220 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #54 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;$
+            <span class="token-info">
+                Token #55 | ID: 400 | LogProb: -0.0068
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(176, 64, 64);">
+            &nbsp;and
+            <span class="token-info">
+                Token #56 | ID: 323 | LogProb: -0.4741
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;$
+            <span class="token-info">
+                Token #57 | ID: 400 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;y
+            <span class="token-info">
+                Token #58 | ID: 379 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;&gt;
+            <span class="token-info">
+                Token #59 | ID: 861 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #60 | ID: 220 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #61 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(146, 13, 13);">
+            &nbsp;$
+            <span class="token-info">
+                Token #62 | ID: 400 | LogProb: -0.1003
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(143, 7, 7);">
+            .
+
+
+            <span class="token-info">
+                Token #63 | ID: 382 | LogProb: -0.0544
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ---
+
+
+            <span class="token-info">
+                Token #64 | ID: 44364 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ###
+            <span class="token-info">
+                Token #65 | ID: 14374 | LogProb: -0.0003
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 3, 3);">
+            &nbsp;Step
+            <span class="token-info">
+                Token #66 | ID: 14822 | LogProb: -0.0236
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #67 | ID: 220 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #68 | ID: 16 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            :
+            <span class="token-info">
+                Token #69 | ID: 25 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(157, 32, 32);">
+            &nbsp;Use
+            <span class="token-info">
+                Token #70 | ID: 5443 | LogProb: -0.2368
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(199, 103, 103);">
+            &nbsp;logarith
+            <span class="token-info">
+                Token #71 | ID: 89936 | LogProb: -0.7604
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(147, 15, 15);">
+            mic
+            <span class="token-info">
+                Token #72 | ID: 21220 | LogProb: -0.1130
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(173, 60, 60);">
+            &nbsp;properties
+            <span class="token-info">
+                Token #73 | ID: 5888 | LogProb: -0.4413
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(146, 13, 13);">
+            
+
+
+            <span class="token-info">
+                Token #74 | ID: 271 | LogProb: -0.1002
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(166, 47, 47);">
+            Rec
+            <span class="token-info">
+                Token #75 | ID: 3820 | LogProb: -0.3507
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            all
+            <span class="token-info">
+                Token #76 | ID: 541 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(178, 67, 67);">
+            &nbsp;the
+            <span class="token-info">
+                Token #77 | ID: 279 | LogProb: -0.4938
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(178, 67, 67);">
+            &nbsp;identity
+            <span class="token-info">
+                Token #78 | ID: 9569 | LogProb: -0.4962
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(157, 31, 31);">
+            :
+
+            <span class="token-info">
+                Token #79 | ID: 510 | LogProb: -0.2278
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #80 | ID: 14085 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #81 | ID: 198 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #82 | ID: 59 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #83 | ID: 839 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(154, 27, 27);">
+            _b
+            <span class="token-info">
+                Token #84 | ID: 880 | LogProb: -0.2018
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            (a
+            <span class="token-info">
+                Token #85 | ID: 2877 | LogProb: -0.0020
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(145, 11, 11);">
+            ^
+            <span class="token-info">
+                Token #86 | ID: 61 | LogProb: -0.0820
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(142, 6, 6);">
+            c
+            <span class="token-info">
+                Token #87 | ID: 66 | LogProb: -0.0498
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            )
+            <span class="token-info">
+                Token #88 | ID: 8 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #89 | ID: 284 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;c
+            <span class="token-info">
+                Token #90 | ID: 272 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 1, 1);">
+            &nbsp;\
+            <span class="token-info">
+                Token #91 | ID: 1124 | LogProb: -0.0110
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(184, 78, 78);">
+            log
+            <span class="token-info">
+                Token #92 | ID: 839 | LogProb: -0.5760
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            _b
+            <span class="token-info">
+                Token #93 | ID: 880 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(176, 64, 64);">
+            &nbsp;a
+            <span class="token-info">
+                Token #94 | ID: 264 | LogProb: -0.4741
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #95 | ID: 198 | LogProb: -0.0002
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #96 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+
+            <span class="token-info">
+                Token #97 | ID: 271 | LogProb: -0.0052
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(155, 28, 28);">
+            Apply
+            <span class="token-info">
+                Token #98 | ID: 28497 | LogProb: -0.2091
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(162, 40, 40);">
+            &nbsp;this
+            <span class="token-info">
+                Token #99 | ID: 419 | LogProb: -0.2956
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(146, 12, 12);">
+            &nbsp;to
+            <span class="token-info">
+                Token #100 | ID: 311 | LogProb: -0.0942
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(171, 55, 55);">
+            &nbsp;both
+            <span class="token-info">
+                Token #101 | ID: 2176 | LogProb: -0.4100
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(178, 68, 68);">
+            &nbsp;equations
+            <span class="token-info">
+                Token #102 | ID: 37906 | LogProb: -0.5006
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(184, 78, 78);">
+            .
+
+
+            <span class="token-info">
+                Token #103 | ID: 382 | LogProb: -0.5760
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(182, 74, 74);">
+            ####
+            <span class="token-info">
+                Token #104 | ID: 820 | LogProb: -0.5493
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 3, 3);">
+            &nbsp;First
+            <span class="token-info">
+                Token #105 | ID: 5512 | LogProb: -0.0237
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 3, 3);">
+            &nbsp;equation
+            <span class="token-info">
+                Token #106 | ID: 23606 | LogProb: -0.0232
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(194, 94, 94);">
+            :
+
+            <span class="token-info">
+                Token #107 | ID: 510 | LogProb: -0.6965
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #108 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #109 | ID: 198 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #110 | ID: 59 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #111 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            _x
+            <span class="token-info">
+                Token #112 | ID: 3212 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            (y
+            <span class="token-info">
+                Token #113 | ID: 7021 | LogProb: -0.0002
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ^
+            <span class="token-info">
+                Token #114 | ID: 61 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            x
+            <span class="token-info">
+                Token #115 | ID: 87 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            )
+            <span class="token-info">
+                Token #116 | ID: 8 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #117 | ID: 284 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(145, 10, 10);">
+            &nbsp;x
+            <span class="token-info">
+                Token #118 | ID: 856 | LogProb: -0.0790
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #119 | ID: 1124 | LogProb: -0.0003
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(146, 13, 13);">
+            log
+            <span class="token-info">
+                Token #120 | ID: 839 | LogProb: -0.1002
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            _x
+            <span class="token-info">
+                Token #121 | ID: 3212 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(143, 8, 8);">
+            &nbsp;y
+            <span class="token-info">
+                Token #122 | ID: 379 | LogProb: -0.0620
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #123 | ID: 284 | LogProb: -0.0067
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #124 | ID: 220 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #125 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #126 | ID: 15 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(169, 52, 52);">
+            
+
+            <span class="token-info">
+                Token #127 | ID: 198 | LogProb: -0.3871
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(169, 52, 52);">
+            $$
+            <span class="token-info">
+                Token #128 | ID: 14085 | LogProb: -0.3869
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(154, 27, 27);">
+            
+
+
+            <span class="token-info">
+                Token #129 | ID: 271 | LogProb: -0.2015
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(223, 144, 144);">
+            So
+            <span class="token-info">
+                Token #130 | ID: 4416 | LogProb: -1.0635
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(167, 49, 49);">
+            :
+
+            <span class="token-info">
+                Token #131 | ID: 510 | LogProb: -0.3634
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #132 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #133 | ID: 198 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(142, 6, 6);">
+            x
+            <span class="token-info">
+                Token #134 | ID: 87 | LogProb: -0.0486
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #135 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 1, 1);">
+            log
+            <span class="token-info">
+                Token #136 | ID: 839 | LogProb: -0.0086
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            _x
+            <span class="token-info">
+                Token #137 | ID: 3212 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;y
+            <span class="token-info">
+                Token #138 | ID: 379 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #139 | ID: 284 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #140 | ID: 220 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #141 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #142 | ID: 15 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(142, 6, 6);">
+            &nbsp;\
+            <span class="token-info">
+                Token #143 | ID: 1124 | LogProb: -0.0488
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(184, 79, 79);">
+            tag
+            <span class="token-info">
+                Token #144 | ID: 4578 | LogProb: -0.5817
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {
+            <span class="token-info">
+                Token #145 | ID: 90 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #146 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+
+            <span class="token-info">
+                Token #147 | ID: 532 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #148 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+
+            <span class="token-info">
+                Token #149 | ID: 271 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(148, 16, 16);">
+            ####
+            <span class="token-info">
+                Token #150 | ID: 820 | LogProb: -0.1211
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;Second
+            <span class="token-info">
+                Token #151 | ID: 10440 | LogProb: -0.0004
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;equation
+            <span class="token-info">
+                Token #152 | ID: 23606 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            :
+
+            <span class="token-info">
+                Token #153 | ID: 510 | LogProb: -0.0041
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #154 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #155 | ID: 198 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #156 | ID: 59 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #157 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            _y
+            <span class="token-info">
+                Token #158 | ID: 4178 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            (x
+            <span class="token-info">
+                Token #159 | ID: 2075 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ^{
+            <span class="token-info">
+                Token #160 | ID: 47822 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #161 | ID: 19 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            y
+            <span class="token-info">
+                Token #162 | ID: 88 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            })
+            <span class="token-info">
+                Token #163 | ID: 5410 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #164 | ID: 284 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #165 | ID: 220 | LogProb: -0.0003
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #166 | ID: 19 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            y
+            <span class="token-info">
+                Token #167 | ID: 88 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #168 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #169 | ID: 839 | LogProb: -0.0032
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            _y
+            <span class="token-info">
+                Token #170 | ID: 4178 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #171 | ID: 856 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #172 | ID: 284 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #173 | ID: 220 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #174 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #175 | ID: 15 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(154, 27, 27);">
+            
+
+            <span class="token-info">
+                Token #176 | ID: 198 | LogProb: -0.2018
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #177 | ID: 14085 | LogProb: -0.0059
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+
+            <span class="token-info">
+                Token #178 | ID: 271 | LogProb: -0.0032
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            So
+            <span class="token-info">
+                Token #179 | ID: 4416 | LogProb: -0.0061
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            :
+
+            <span class="token-info">
+                Token #180 | ID: 510 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #181 | ID: 14085 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #182 | ID: 198 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #183 | ID: 19 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            y
+            <span class="token-info">
+                Token #184 | ID: 88 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #185 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #186 | ID: 839 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            _y
+            <span class="token-info">
+                Token #187 | ID: 4178 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #188 | ID: 856 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #189 | ID: 284 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #190 | ID: 220 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #191 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #192 | ID: 15 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #193 | ID: 1124 | LogProb: -0.0020
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(143, 7, 7);">
+            tag
+            <span class="token-info">
+                Token #194 | ID: 4578 | LogProb: -0.0541
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {
+            <span class="token-info">
+                Token #195 | ID: 90 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            2
+            <span class="token-info">
+                Token #196 | ID: 17 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+
+            <span class="token-info">
+                Token #197 | ID: 532 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #198 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+
+            <span class="token-info">
+                Token #199 | ID: 271 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ---
+
+
+            <span class="token-info">
+                Token #200 | ID: 44364 | LogProb: -0.0028
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ###
+            <span class="token-info">
+                Token #201 | ID: 14374 | LogProb: -0.0003
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;Step
+            <span class="token-info">
+                Token #202 | ID: 14822 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #203 | ID: 220 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            2
+            <span class="token-info">
+                Token #204 | ID: 17 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            :
+            <span class="token-info">
+                Token #205 | ID: 25 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(197, 100, 100);">
+            &nbsp;Use
+            <span class="token-info">
+                Token #206 | ID: 5443 | LogProb: -0.7380
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(176, 63, 63);">
+            &nbsp;change
+            <span class="token-info">
+                Token #207 | ID: 2297 | LogProb: -0.4691
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(146, 13, 13);">
+            &nbsp;of
+            <span class="token-info">
+                Token #208 | ID: 315 | LogProb: -0.1002
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;base
+            <span class="token-info">
+                Token #209 | ID: 2331 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(163, 42, 42);">
+            &nbsp;formula
+            <span class="token-info">
+                Token #210 | ID: 14806 | LogProb: -0.3117
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 3, 3);">
+            
+
+
+            <span class="token-info">
+                Token #211 | ID: 271 | LogProb: -0.0229
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(212, 127, 127);">
+            We
+            <span class="token-info">
+                Token #212 | ID: 1654 | LogProb: -0.9324
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(213, 128, 128);">
+            &nbsp;know
+            <span class="token-info">
+                Token #213 | ID: 1414 | LogProb: -0.9426
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(173, 59, 59);">
+            :
+
+            <span class="token-info">
+                Token #214 | ID: 510 | LogProb: -0.4393
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #215 | ID: 14085 | LogProb: -0.0003
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #216 | ID: 198 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #217 | ID: 59 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #218 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(193, 93, 93);">
+            _b
+            <span class="token-info">
+                Token #219 | ID: 880 | LogProb: -0.6898
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;a
+            <span class="token-info">
+                Token #220 | ID: 264 | LogProb: -0.0006
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #221 | ID: 284 | LogProb: -0.0003
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #222 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            frac
+            <span class="token-info">
+                Token #223 | ID: 37018 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(169, 52, 52);">
+            {\
+            <span class="token-info">
+                Token #224 | ID: 35702 | LogProb: -0.3869
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(142, 6, 6);">
+            log
+            <span class="token-info">
+                Token #225 | ID: 839 | LogProb: -0.0486
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(143, 7, 7);">
+            &nbsp;a
+            <span class="token-info">
+                Token #226 | ID: 264 | LogProb: -0.0546
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }{
+            <span class="token-info">
+                Token #227 | ID: 15170 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #228 | ID: 59 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #229 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;b
+            <span class="token-info">
+                Token #230 | ID: 293 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(141, 4, 4);">
+            }
+
+            <span class="token-info">
+                Token #231 | ID: 532 | LogProb: -0.0298
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(145, 10, 10);">
+            $$
+            <span class="token-info">
+                Token #232 | ID: 14085 | LogProb: -0.0789
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(141, 3, 3);">
+            
+
+
+            <span class="token-info">
+                Token #233 | ID: 271 | LogProb: -0.0263
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(195, 97, 97);">
+            So
+            <span class="token-info">
+                Token #234 | ID: 4416 | LogProb: -0.7168
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(196, 98, 98);">
+            :
+
+            <span class="token-info">
+                Token #235 | ID: 510 | LogProb: -0.7255
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(149, 17, 17);">
+            $$
+            <span class="token-info">
+                Token #236 | ID: 14085 | LogProb: -0.1272
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #237 | ID: 198 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #238 | ID: 59 | LogProb: -0.0006
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #239 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            _x
+            <span class="token-info">
+                Token #240 | ID: 3212 | LogProb: -0.0002
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;y
+            <span class="token-info">
+                Token #241 | ID: 379 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #242 | ID: 284 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #243 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            frac
+            <span class="token-info">
+                Token #244 | ID: 37018 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {\
+            <span class="token-info">
+                Token #245 | ID: 35702 | LogProb: -0.0041
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 1, 1);">
+            log
+            <span class="token-info">
+                Token #246 | ID: 839 | LogProb: -0.0111
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;y
+            <span class="token-info">
+                Token #247 | ID: 379 | LogProb: -0.0008
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }{
+            <span class="token-info">
+                Token #248 | ID: 15170 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #249 | ID: 59 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #250 | ID: 839 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #251 | ID: 856 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(155, 29, 29);">
+            },
+            <span class="token-info">
+                Token #252 | ID: 2137 | LogProb: -0.2133
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #253 | ID: 1124 | LogProb: -0.0025
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            quad
+            <span class="token-info">
+                Token #254 | ID: 31610 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #255 | ID: 1124 | LogProb: -0.0016
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(142, 5, 5);">
+            log
+            <span class="token-info">
+                Token #256 | ID: 839 | LogProb: -0.0381
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            _y
+            <span class="token-info">
+                Token #257 | ID: 4178 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #258 | ID: 856 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #259 | ID: 284 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #260 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            frac
+            <span class="token-info">
+                Token #261 | ID: 37018 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {\
+            <span class="token-info">
+                Token #262 | ID: 35702 | LogProb: -0.0067
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #263 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #264 | ID: 856 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }{
+            <span class="token-info">
+                Token #265 | ID: 15170 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #266 | ID: 59 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #267 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;y
+            <span class="token-info">
+                Token #268 | ID: 379 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 1, 1);">
+            }
+
+            <span class="token-info">
+                Token #269 | ID: 532 | LogProb: -0.0130
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #270 | ID: 14085 | LogProb: -0.0004
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+
+            <span class="token-info">
+                Token #271 | ID: 271 | LogProb: -0.0009
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(255, 200, 200);">
+            Sub
+            <span class="token-info">
+                Token #272 | ID: 3136 | LogProb: -1.4676
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 1, 1);">
+            stitute
+            <span class="token-info">
+                Token #273 | ID: 7660 | LogProb: -0.0111
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(146, 13, 13);">
+            &nbsp;into
+            <span class="token-info">
+                Token #274 | ID: 1119 | LogProb: -0.1002
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(157, 32, 32);">
+            &nbsp;equations
+            <span class="token-info">
+                Token #275 | ID: 37906 | LogProb: -0.2363
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(142, 6, 6);">
+            &nbsp;(
+            <span class="token-info">
+                Token #276 | ID: 320 | LogProb: -0.0446
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #277 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            )
+            <span class="token-info">
+                Token #278 | ID: 8 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;and
+            <span class="token-info">
+                Token #279 | ID: 323 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;(
+            <span class="token-info">
+                Token #280 | ID: 320 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            2
+            <span class="token-info">
+                Token #281 | ID: 17 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(163, 42, 42);">
+            ):
+
+
+            <span class="token-info">
+                Token #282 | ID: 7731 | LogProb: -0.3139
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(172, 57, 57);">
+            ####
+            <span class="token-info">
+                Token #283 | ID: 820 | LogProb: -0.4222
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(178, 68, 68);">
+            &nbsp;Equation
+            <span class="token-info">
+                Token #284 | ID: 84670 | LogProb: -0.5004
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;(
+            <span class="token-info">
+                Token #285 | ID: 320 | LogProb: -0.0004
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #286 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(148, 16, 16);">
+            ):
+
+            <span class="token-info">
+                Token #287 | ID: 982 | LogProb: -0.1226
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #288 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #289 | ID: 198 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            x
+            <span class="token-info">
+                Token #290 | ID: 87 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #291 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            cdot
+            <span class="token-info">
+                Token #292 | ID: 50853 | LogProb: -0.0016
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #293 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            frac
+            <span class="token-info">
+                Token #294 | ID: 37018 | LogProb: -0.0012
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {\
+            <span class="token-info">
+                Token #295 | ID: 35702 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #296 | ID: 839 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;y
+            <span class="token-info">
+                Token #297 | ID: 379 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }{
+            <span class="token-info">
+                Token #298 | ID: 15170 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #299 | ID: 59 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #300 | ID: 839 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #301 | ID: 856 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+            <span class="token-info">
+                Token #302 | ID: 92 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #303 | ID: 284 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #304 | ID: 220 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #305 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #306 | ID: 15 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(146, 13, 13);">
+            &nbsp;\
+            <span class="token-info">
+                Token #307 | ID: 1124 | LogProb: -0.1005
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(183, 77, 77);">
+            tag
+            <span class="token-info">
+                Token #308 | ID: 4578 | LogProb: -0.5683
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {
+            <span class="token-info">
+                Token #309 | ID: 90 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(176, 65, 65);">
+            3
+            <span class="token-info">
+                Token #310 | ID: 18 | LogProb: -0.4788
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+
+            <span class="token-info">
+                Token #311 | ID: 532 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #312 | ID: 14085 | LogProb: -0.0009
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+
+            <span class="token-info">
+                Token #313 | ID: 271 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ####
+            <span class="token-info">
+                Token #314 | ID: 820 | LogProb: -0.0017
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;Equation
+            <span class="token-info">
+                Token #315 | ID: 84670 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;(
+            <span class="token-info">
+                Token #316 | ID: 320 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            2
+            <span class="token-info">
+                Token #317 | ID: 17 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ):
+
+            <span class="token-info">
+                Token #318 | ID: 982 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #319 | ID: 14085 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #320 | ID: 198 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #321 | ID: 19 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            y
+            <span class="token-info">
+                Token #322 | ID: 88 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #323 | ID: 1124 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            cdot
+            <span class="token-info">
+                Token #324 | ID: 50853 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #325 | ID: 1124 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            frac
+            <span class="token-info">
+                Token #326 | ID: 37018 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {\
+            <span class="token-info">
+                Token #327 | ID: 35702 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #328 | ID: 839 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #329 | ID: 856 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }{
+            <span class="token-info">
+                Token #330 | ID: 15170 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #331 | ID: 59 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #332 | ID: 839 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;y
+            <span class="token-info">
+                Token #333 | ID: 379 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+            <span class="token-info">
+                Token #334 | ID: 92 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #335 | ID: 284 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #336 | ID: 220 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #337 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #338 | ID: 15 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #339 | ID: 1124 | LogProb: -0.0007
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            tag
+            <span class="token-info">
+                Token #340 | ID: 4578 | LogProb: -0.0054
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {
+            <span class="token-info">
+                Token #341 | ID: 90 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #342 | ID: 19 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+
+            <span class="token-info">
+                Token #343 | ID: 532 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #344 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+
+            <span class="token-info">
+                Token #345 | ID: 271 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(142, 5, 5);">
+            ---
+
+
+            <span class="token-info">
+                Token #346 | ID: 44364 | LogProb: -0.0433
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ###
+            <span class="token-info">
+                Token #347 | ID: 14374 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;Step
+            <span class="token-info">
+                Token #348 | ID: 14822 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #349 | ID: 220 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            3
+            <span class="token-info">
+                Token #350 | ID: 18 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            :
+            <span class="token-info">
+                Token #351 | ID: 25 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(198, 102, 102);">
+            &nbsp;Multiply
+            <span class="token-info">
+                Token #352 | ID: 71059 | LogProb: -0.7516
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(155, 28, 28);">
+            &nbsp;equations
+            <span class="token-info">
+                Token #353 | ID: 37906 | LogProb: -0.2091
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 1, 1);">
+            &nbsp;(
+            <span class="token-info">
+                Token #354 | ID: 320 | LogProb: -0.0136
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            3
+            <span class="token-info">
+                Token #355 | ID: 18 | LogProb: -0.0025
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            )
+            <span class="token-info">
+                Token #356 | ID: 8 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;and
+            <span class="token-info">
+                Token #357 | ID: 323 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;(
+            <span class="token-info">
+                Token #358 | ID: 320 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #359 | ID: 19 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            )
+
+
+            <span class="token-info">
+                Token #360 | ID: 692 | LogProb: -0.0069
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(176, 64, 64);">
+            Multiply
+            <span class="token-info">
+                Token #361 | ID: 95155 | LogProb: -0.4726
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(206, 117, 117);">
+            &nbsp;both
+            <span class="token-info">
+                Token #362 | ID: 2176 | LogProb: -0.8591
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(152, 23, 23);">
+            &nbsp;sides
+            <span class="token-info">
+                Token #363 | ID: 11067 | LogProb: -0.1697
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(177, 65, 65);">
+            &nbsp;of
+            <span class="token-info">
+                Token #364 | ID: 315 | LogProb: -0.4820
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(192, 92, 92);">
+            &nbsp;equations
+            <span class="token-info">
+                Token #365 | ID: 37906 | LogProb: -0.6759
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 1, 1);">
+            &nbsp;(
+            <span class="token-info">
+                Token #366 | ID: 320 | LogProb: -0.0130
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            3
+            <span class="token-info">
+                Token #367 | ID: 18 | LogProb: -0.0012
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            )
+            <span class="token-info">
+                Token #368 | ID: 8 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;and
+            <span class="token-info">
+                Token #369 | ID: 323 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;(
+            <span class="token-info">
+                Token #370 | ID: 320 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #371 | ID: 19 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(141, 4, 4);">
+            ):
+
+
+            <span class="token-info">
+                Token #372 | ID: 7731 | LogProb: -0.0361
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(147, 14, 14);">
+            $$
+            <span class="token-info">
+                Token #373 | ID: 14085 | LogProb: -0.1089
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #374 | ID: 198 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(144, 9, 9);">
+            \
+            <span class="token-info">
+                Token #375 | ID: 59 | LogProb: -0.0727
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            left
+            <span class="token-info">
+                Token #376 | ID: 2359 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(159, 34, 34);">
+            (
+            <span class="token-info">
+                Token #377 | ID: 7 | LogProb: -0.2536
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #378 | ID: 856 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #379 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            cdot
+            <span class="token-info">
+                Token #380 | ID: 50853 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #381 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            frac
+            <span class="token-info">
+                Token #382 | ID: 37018 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {\
+            <span class="token-info">
+                Token #383 | ID: 35702 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #384 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;y
+            <span class="token-info">
+                Token #385 | ID: 379 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }{
+            <span class="token-info">
+                Token #386 | ID: 15170 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #387 | ID: 59 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #388 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #389 | ID: 856 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+            <span class="token-info">
+                Token #390 | ID: 92 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #391 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            right
+            <span class="token-info">
+                Token #392 | ID: 1291 | LogProb: -0.0002
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(143, 7, 7);">
+            )
+            <span class="token-info">
+                Token #393 | ID: 8 | LogProb: -0.0524
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #394 | ID: 1124 | LogProb: -0.0003
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(149, 17, 17);">
+            cdot
+            <span class="token-info">
+                Token #395 | ID: 50853 | LogProb: -0.1270
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #396 | ID: 1124 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            left
+            <span class="token-info">
+                Token #397 | ID: 2359 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            (
+            <span class="token-info">
+                Token #398 | ID: 7 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(144, 9, 9);">
+            &nbsp;
+            <span class="token-info">
+                Token #399 | ID: 220 | LogProb: -0.0700
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #400 | ID: 19 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            y
+            <span class="token-info">
+                Token #401 | ID: 88 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #402 | ID: 1124 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            cdot
+            <span class="token-info">
+                Token #403 | ID: 50853 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #404 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            frac
+            <span class="token-info">
+                Token #405 | ID: 37018 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {\
+            <span class="token-info">
+                Token #406 | ID: 35702 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #407 | ID: 839 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #408 | ID: 856 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }{
+            <span class="token-info">
+                Token #409 | ID: 15170 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #410 | ID: 59 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #411 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;y
+            <span class="token-info">
+                Token #412 | ID: 379 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+            <span class="token-info">
+                Token #413 | ID: 92 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #414 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            right
+            <span class="token-info">
+                Token #415 | ID: 1291 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(142, 6, 6);">
+            )
+            <span class="token-info">
+                Token #416 | ID: 8 | LogProb: -0.0486
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #417 | ID: 284 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #418 | ID: 220 | LogProb: -0.0004
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #419 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #420 | ID: 15 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #421 | ID: 1124 | LogProb: -0.0002
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            cdot
+            <span class="token-info">
+                Token #422 | ID: 50853 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #423 | ID: 220 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #424 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #425 | ID: 15 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(184, 78, 78);">
+            &nbsp;=
+            <span class="token-info">
+                Token #426 | ID: 284 | LogProb: -0.5760
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #427 | ID: 220 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #428 | ID: 16 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #429 | ID: 15 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #430 | ID: 15 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #431 | ID: 198 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #432 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+
+            <span class="token-info">
+                Token #433 | ID: 271 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(170, 54, 54);">
+            Now
+            <span class="token-info">
+                Token #434 | ID: 7039 | LogProb: -0.3987
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(148, 15, 15);">
+            &nbsp;simplify
+            <span class="token-info">
+                Token #435 | ID: 39721 | LogProb: -0.1158
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(192, 91, 91);">
+            &nbsp;the
+            <span class="token-info">
+                Token #436 | ID: 279 | LogProb: -0.6717
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 3, 3);">
+            &nbsp;left
+            <span class="token-info">
+                Token #437 | ID: 2115 | LogProb: -0.0240
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(144, 9, 9);">
+            -hand
+            <span class="token-info">
+                Token #438 | ID: 24413 | LogProb: -0.0705
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;side
+            <span class="token-info">
+                Token #439 | ID: 3108 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(144, 9, 9);">
+            :
+
+
+            <span class="token-info">
+                Token #440 | ID: 1447 | LogProb: -0.0726
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(195, 97, 97);">
+            -
+            <span class="token-info">
+                Token #441 | ID: 12 | LogProb: -0.7191
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(156, 30, 30);">
+            &nbsp;$
+            <span class="token-info">
+                Token #442 | ID: 400 | LogProb: -0.2260
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(171, 56, 56);">
+            &nbsp;x
+            <span class="token-info">
+                Token #443 | ID: 856 | LogProb: -0.4130
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 2, 2);">
+            &nbsp;\
+            <span class="token-info">
+                Token #444 | ID: 1124 | LogProb: -0.0184
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            cdot
+            <span class="token-info">
+                Token #445 | ID: 50853 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 3, 3);">
+            &nbsp;
+            <span class="token-info">
+                Token #446 | ID: 220 | LogProb: -0.0228
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #447 | ID: 19 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            y
+            <span class="token-info">
+                Token #448 | ID: 88 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 2, 2);">
+            &nbsp;=
+            <span class="token-info">
+                Token #449 | ID: 284 | LogProb: -0.0177
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #450 | ID: 220 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #451 | ID: 19 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            xy
+            <span class="token-info">
+                Token #452 | ID: 4130 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;$
+
+            <span class="token-info">
+                Token #453 | ID: 24437 | LogProb: -0.0019
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            -
+            <span class="token-info">
+                Token #454 | ID: 12 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(141, 5, 5);">
+            &nbsp;$
+            <span class="token-info">
+                Token #455 | ID: 400 | LogProb: -0.0373
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #456 | ID: 1124 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            frac
+            <span class="token-info">
+                Token #457 | ID: 37018 | LogProb: -0.0018
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {\
+            <span class="token-info">
+                Token #458 | ID: 35702 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #459 | ID: 839 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;y
+            <span class="token-info">
+                Token #460 | ID: 379 | LogProb: -0.0003
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }{
+            <span class="token-info">
+                Token #461 | ID: 15170 | LogProb: -0.0067
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #462 | ID: 59 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #463 | ID: 839 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #464 | ID: 856 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+            <span class="token-info">
+                Token #465 | ID: 92 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #466 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            cdot
+            <span class="token-info">
+                Token #467 | ID: 50853 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #468 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            frac
+            <span class="token-info">
+                Token #469 | ID: 37018 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {\
+            <span class="token-info">
+                Token #470 | ID: 35702 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #471 | ID: 839 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;x
+            <span class="token-info">
+                Token #472 | ID: 856 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }{
+            <span class="token-info">
+                Token #473 | ID: 15170 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            \
+            <span class="token-info">
+                Token #474 | ID: 59 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            log
+            <span class="token-info">
+                Token #475 | ID: 839 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;y
+            <span class="token-info">
+                Token #476 | ID: 379 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+            <span class="token-info">
+                Token #477 | ID: 92 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #478 | ID: 284 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #479 | ID: 220 | LogProb: -0.0009
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #480 | ID: 16 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 2, 2);">
+            &nbsp;$
+
+
+            <span class="token-info">
+                Token #481 | ID: 84500 | LogProb: -0.0149
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(141, 4, 4);">
+            So
+            <span class="token-info">
+                Token #482 | ID: 4416 | LogProb: -0.0360
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(211, 125, 125);">
+            &nbsp;the
+            <span class="token-info">
+                Token #483 | ID: 279 | LogProb: -0.9223
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(215, 132, 132);">
+            &nbsp;left
+            <span class="token-info">
+                Token #484 | ID: 2115 | LogProb: -0.9720
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(145, 11, 11);">
+            -hand
+            <span class="token-info">
+                Token #485 | ID: 24413 | LogProb: -0.0855
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;side
+            <span class="token-info">
+                Token #486 | ID: 3108 | LogProb: -0.0013
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(169, 52, 52);">
+            &nbsp;becomes
+            <span class="token-info">
+                Token #487 | ID: 9044 | LogProb: -0.3879
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(183, 76, 76);">
+            :
+
+
+            <span class="token-info">
+                Token #488 | ID: 1447 | LogProb: -0.5586
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #489 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #490 | ID: 198 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #491 | ID: 19 | LogProb: -0.0007
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            xy
+            <span class="token-info">
+                Token #492 | ID: 4130 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(171, 56, 56);">
+            &nbsp;=
+            <span class="token-info">
+                Token #493 | ID: 284 | LogProb: -0.4129
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #494 | ID: 220 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #495 | ID: 16 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #496 | ID: 15 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #497 | ID: 15 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(140, 3, 3);">
+            
+
+            <span class="token-info">
+                Token #498 | ID: 198 | LogProb: -0.0233
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(142, 5, 5);">
+            $$
+            <span class="token-info">
+                Token #499 | ID: 14085 | LogProb: -0.0380
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+
+            <span class="token-info">
+                Token #500 | ID: 271 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(183, 77, 77);">
+            ---
+
+
+            <span class="token-info">
+                Token #501 | ID: 44364 | LogProb: -0.5688
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ###
+            <span class="token-info">
+                Token #502 | ID: 14374 | LogProb: -0.0004
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;Step
+            <span class="token-info">
+                Token #503 | ID: 14822 | LogProb: -0.0073
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #504 | ID: 220 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #505 | ID: 19 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            :
+            <span class="token-info">
+                Token #506 | ID: 25 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;Solve
+            <span class="token-info">
+                Token #507 | ID: 63284 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;for
+            <span class="token-info">
+                Token #508 | ID: 369 | LogProb: -0.0012
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;$
+            <span class="token-info">
+                Token #509 | ID: 400 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;xy
+            <span class="token-info">
+                Token #510 | ID: 30784 | LogProb: -0.0022
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;$
+
+
+            <span class="token-info">
+                Token #511 | ID: 84500 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 1, 1);">
+            $$
+            <span class="token-info">
+                Token #512 | ID: 14085 | LogProb: -0.0112
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #513 | ID: 198 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(184, 78, 78);">
+            xy
+            <span class="token-info">
+                Token #514 | ID: 4130 | LogProb: -0.5764
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #515 | ID: 284 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;\
+            <span class="token-info">
+                Token #516 | ID: 1124 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            frac
+            <span class="token-info">
+                Token #517 | ID: 37018 | LogProb: -0.0005
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {
+            <span class="token-info">
+                Token #518 | ID: 90 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            1
+            <span class="token-info">
+                Token #519 | ID: 16 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #520 | ID: 15 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            0
+            <span class="token-info">
+                Token #521 | ID: 15 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }{
+            <span class="token-info">
+                Token #522 | ID: 15170 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            4
+            <span class="token-info">
+                Token #523 | ID: 19 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            }
+            <span class="token-info">
+                Token #524 | ID: 92 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;=
+            <span class="token-info">
+                Token #525 | ID: 284 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;
+            <span class="token-info">
+                Token #526 | ID: 220 | LogProb: -0.0052
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            2
+            <span class="token-info">
+                Token #527 | ID: 17 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            5
+            <span class="token-info">
+                Token #528 | ID: 20 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+            <span class="token-info">
+                Token #529 | ID: 198 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $$
+            <span class="token-info">
+                Token #530 | ID: 14085 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            
+
+
+            <span class="token-info">
+                Token #531 | ID: 271 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ---
+
+
+            <span class="token-info">
+                Token #532 | ID: 44364 | LogProb: -0.0067
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(179, 69, 69);">
+            Therefore
+            <span class="token-info">
+                Token #533 | ID: 54815 | LogProb: -0.5109
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            ,
+            <span class="token-info">
+                Token #534 | ID: 11 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;the
+            <span class="token-info">
+                Token #535 | ID: 279 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;final
+            <span class="token-info">
+                Token #536 | ID: 1590 | LogProb: -0.0001
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;answer
+            <span class="token-info">
+                Token #537 | ID: 4226 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;is
+            <span class="token-info">
+                Token #538 | ID: 374 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            :
+            <span class="token-info">
+                Token #539 | ID: 25 | LogProb: -0.0036
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(149, 17, 17);">
+            &nbsp;$\
+            <span class="token-info">
+                Token #540 | ID: 57960 | LogProb: -0.1278
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            boxed
+            <span class="token-info">
+                Token #541 | ID: 79075 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            {
+            <span class="token-info">
+                Token #542 | ID: 90 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            2
+            <span class="token-info">
+                Token #543 | ID: 17 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            5
+            <span class="token-info">
+                Token #544 | ID: 20 | LogProb: 0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 1, 1);">
+            }
+            <span class="token-info">
+                Token #545 | ID: 92 | LogProb: -0.0086
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            $.
+            <span class="token-info">
+                Token #546 | ID: 12947 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;I
+            <span class="token-info">
+                Token #547 | ID: 358 | LogProb: -0.0049
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;hope
+            <span class="token-info">
+                Token #548 | ID: 3900 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;it
+            <span class="token-info">
+                Token #549 | ID: 432 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;is
+            <span class="token-info">
+                Token #550 | ID: 374 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &nbsp;correct
+            <span class="token-info">
+                Token #551 | ID: 4396 | LogProb: -0.0000
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(193, 94, 94);">
+            .
+            <span class="token-info">
+                Token #552 | ID: 13 | LogProb: -0.6933
+            </span>
+        </span>
+        
+        <span class="token" style="background-color: rgb(139, 0, 0);">
+            &lt;|im_end|&gt;
+            <span class="token-info">
+                Token #553 | ID: 151645 | LogProb: -0.0003
+            </span>
+        </span>
+        </div>
+    <div class="stats">
+        <h4>Token Statistics</h4>
+        <p><strong>Total tokens:</strong> 554</p>
+        <p><strong>Average log probability:</strong> -0.0745</p>
+        <p><strong>Min log probability:</strong> -1.4676</p>
+        <p><strong>Max log probability:</strong> 0.0000</p>
+        <p><strong>Std deviation:</strong> 0.1903</p>
+    </div>
+    
+    <div style="margin-top: 20px; font-family: Arial, sans-serif;">
+        <h4>Log Probability Scale</h4>
+        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+            <span style="margin-right: 10px;">Low</span>
+            <div style="width: 300px; height: 20px; background: linear-gradient(to right, 
+                rgb(255, 200, 200) 0%, rgb(139, 0, 0) 100%); border: 1px solid #ccc;"></div>
+            <span style="margin-left: 10px;">High</span>
+        </div>
+    </div>
+    
+    </body>
+    </html>
+    
