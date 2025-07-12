@@ -6,9 +6,10 @@ from transformers import AutoTokenizer
 import html as html_module
 from fire import Fire
 import pandas as pd
+from tqdm import tqdm
+from loguru import logger
 
-
-def visualize_token_logprobs(string, logprob_list, tokenizer_name="Qwen/Qwen3-32B", method="html"):
+def visualize_token_logprobs(tokens, logprob_list, tokenizer_name="Qwen/Qwen3-32B", method="html"):
     """
     Visualize text with tokens colored by their log probabilities.
 
@@ -18,16 +19,12 @@ def visualize_token_logprobs(string, logprob_list, tokenizer_name="Qwen/Qwen3-32
         tokenizer_name: HuggingFace tokenizer name
         method: "html" or "matplotlib" for visualization method
     """
-    # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
-
-    # Tokenize the string
-    tokens = tokenizer.encode(string, add_special_tokens=False)
     token_strings = [tokenizer.decode([token]) for token in tokens]
 
     # Ensure logprob_list matches token count
     if len(logprob_list) != len(tokens):
-        print(f"Warning: logprob_list length ({len(logprob_list)}) doesn't match token count ({len(tokens)})")
+        logger.info(f"Warning: logprob_list length ({len(logprob_list)}) doesn't match token count ({len(tokens)})")
         # Truncate or pad as needed
         if len(logprob_list) > len(tokens):
             logprob_list = logprob_list[:len(tokens)]
@@ -65,7 +62,7 @@ def create_html_visualization(token_strings, normalized_logprobs, original_logpr
         escaped_token = html_module.escape(token)
 
         # Create span with color and tooltip
-        span = f'<span style="background-color: rgb({r}, {g}, {b}); ' \
+        span = f'<span style="background-color: rgb({r}, {g}, {b}); color: white; ' \
                f'padding: 2px 1px; margin: 0 1px; border-radius: 3px; ' \
                f'display: inline-block;" title="logprob: {orig_prob:.4f}">' \
                f'{escaped_token}</span>'
@@ -190,12 +187,11 @@ def example_usage():
 
 
 # Advanced visualization with token boundaries
-def visualize_with_token_info(string, logprob_list, tokenizer_name="Qwen/Qwen3-32B"):
+def visualize_with_token_info(tokens, logprob_list, tokenizer_name="Qwen/Qwen3-32B"):
     """
     Enhanced visualization showing token boundaries and detailed information.
     """
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
-    tokens = tokenizer.encode(string, add_special_tokens=False)
     token_strings = [tokenizer.decode([token]) for token in tokens]
 
     # Create detailed HTML with token information
@@ -208,6 +204,7 @@ def visualize_with_token_info(string, logprob_list, tokenizer_name="Qwen/Qwen3-3
             margin: 20px;
         }
         .token {
+            color: white;
             display: inline-block;
             padding: 4px 6px;
             margin: 2px;
@@ -316,10 +313,39 @@ def save_visualization(html_content, filename="token_visualization.html"):
 
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(full_html)
-    print(f"Visualization saved to {filename}")
+    logger.info(f"Visualization saved to {filename}")
 
 
-def main(detail_file_path: str, sample_id: int = 0):
+def main_single_sample(df, sample_id: int):
+    metric = next(iter(df.metric[sample_id].values()))
+    model_response = df.model_response[sample_id]
+
+    tokens = model_response["output_tokens"][0]
+    logprob_list = []
+    for logprob_dict in tqdm(model_response["logprobs"][0], desc=f"Extracting logprobs for sample {sample_id}"):
+        for key, value in logprob_dict.items():
+            if value is not None and value["rank"] == 1:
+                logprob_list.append(value["logprob"])
+
+    assert len(tokens) == len(logprob_list)
+    logger.info(f"Sample ID: {sample_id} with {len(tokens)} response tokens (metric: {metric})")
+
+    # plot!
+    enhanced_html = visualize_with_token_info(tokens, logprob_list)
+    save_visualization(enhanced_html, f"plots/token-logprobs-{sample_id}.html")
+
+
+def main(detail_file_path: str, sample_id: int = None):
     df = pd.read_parquet(detail_file_path)
-    sample = df.iloc[0]
 
+    if sample_id is None:
+        num_samples = len(df.metric)
+        logger.info(f"Default plotting all samples ({num_samples})")
+        for idx in range(num_samples):
+            main_single_sample(df, idx)
+    else:
+        main_single_sample(df, sample_id)
+
+
+if __name__ == "__main__":
+    Fire(main)
