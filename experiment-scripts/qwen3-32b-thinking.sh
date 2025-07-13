@@ -10,14 +10,14 @@ OUTPUT_DIR=data/evals/$MODEL-thinking
 # AIME 2024
 TASK=aime24
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details --wandb 2>&1 | tee $WANDB_NAME_$TASK_output.log
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee $WANDB_NAME_$TASK_output.log
 
 # MATH
 TASK=math_500
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details --wandb 2>&1 | tee $WANDB_NAME_$TASK_output.log
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee $WANDB_NAME_$TASK_output.log
 
 # GPQA Diamond
 TASK=gsm8k
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details --wandb 2>&1 | tee $WANDB_NAME_$TASK_output.log
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee $WANDB_NAME_$TASK_output.log
