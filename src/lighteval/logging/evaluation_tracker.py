@@ -216,14 +216,14 @@ class EvaluationTracker:
         """Saves the experiment information and results to files, and to the hub if requested."""
         logger.info("Saving experiment tracker")
         date_id = datetime.now().isoformat().replace(":", "-")
-        logger.debug(f"Date: {date_id}")
+        logger.info(f"Date: {date_id}")
 
         # We first prepare data to save
         config_general = asdict(self.general_config_logger)
-        logger.debug(f"General config size: {len(config_general)}")
+        logger.info(f"General config size: {len(config_general)}")
         # We remove the config from logging, which contains context/accelerator objects
         config_general.pop("config")
-        logger.debug(f"General config size after pop: {len(config_general)}")
+        logger.info(f"General config size after pop: {len(config_general)}")
 
         results_dict = {
             "config_general": config_general,
@@ -233,15 +233,15 @@ class EvaluationTracker:
             "summary_tasks": self.details_logger.compiled_details,
             "summary_general": asdict(self.details_logger.compiled_details_over_all_tasks),
         }
-        logger.debug(f"General results keys: {results_dict.keys()}")
+        logger.info(f"General results keys: {results_dict.keys()}")
 
         # Create the details datasets for later upload
         details_datasets: dict[str, Dataset] = {}
         for task_name, task_details in self.details_logger.details.items():
             # Create a dataset from the dictionary - we force cast to str to avoid formatting problems for nested objects
-            logger.debug(f"Working on task: {task_name}")
+            logger.info(f"Working on task: {task_name}")
             dataset = Dataset.from_list([asdict(detail) for detail in task_details])
-            logger.debug(f"Dataset size: {len(dataset)}")
+            logger.info(f"Dataset size: {len(dataset)}")
 
             # We don't keep 'id' around if it's there
             column_names = dataset.column_names
