@@ -338,14 +338,82 @@ class EvaluationTracker:
                 )
         return details_datasets
 
+    def _clean_none_values(self, obj):
+        """
+        Recursively remove None values from nested dictionaries and lists.
+        This eliminates memory waste from padding None entries in logprobs.
+        """
+        if obj is None:
+            return None
+        elif isinstance(obj, dict):
+            # Remove None values from dictionary
+            cleaned_dict = {}
+            for key, value in obj.items():
+                cleaned_value = self._clean_none_values(value)
+                if cleaned_value is not None:
+                    cleaned_dict[key] = cleaned_value
+            return cleaned_dict if cleaned_dict else None
+        elif isinstance(obj, list):
+            # Remove None values from list and clean nested elements
+            cleaned_list = []
+            for item in obj:
+                cleaned_item = self._clean_none_values(item)
+                if cleaned_item is not None:
+                    cleaned_list.append(cleaned_item)
+            return cleaned_list if cleaned_list else None
+        else:
+            # For primitive types (str, int, float, etc.), return as-is
+            return obj
+
     def save_details(self, date_id: str, details_datasets: dict[str, Dataset]):
         output_dir_details_sub_folder = self._get_details_sub_folder(date_id)
         self.fs.mkdirs(output_dir_details_sub_folder, exist_ok=True)
         logger.info(f"Saving details to {output_dir_details_sub_folder}")
         for task_name, dataset in details_datasets.items():
-            output_file_details = output_dir_details_sub_folder / f"details_{task_name}_{date_id}.parquet"
-            with self.fs.open(str(output_file_details), "wb") as f:
-                dataset.to_parquet(f)
+            # Extract logprobs from model_response and save separately to avoid memory waste
+            extracted_logprobs = []
+            cleaned_dataset_rows = []
+            
+            for row in dataset:
+                if 'model_response' in row and row['model_response'] is not None:
+                    model_response = row['model_response'].copy()
+                    
+                    # Extract logprobs if they exist
+                    logprobs = model_response.pop('logprobs', None)
+                    extracted_logprobs.append(logprobs)
+                    
+                    # Create cleaned row without logprobs
+                    cleaned_row = row.copy()
+                    cleaned_row['model_response'] = model_response
+                    cleaned_dataset_rows.append(cleaned_row)
+                else:
+                    # No model_response or it's None
+                    extracted_logprobs.append(None)
+                    cleaned_dataset_rows.append(row)
+            
+            # Clean and save logprobs separately as JSON
+            if any(logprobs is not None for logprobs in extracted_logprobs):
+                # Recursively clean None values from logprobs to eliminate memory waste
+                cleaned_logprobs = self._clean_none_values(extracted_logprobs)
+                
+                logprobs_file = output_dir_details_sub_folder / f"details_{task_name}_{date_id}_logprobs.json"
+                with self.fs.open(str(logprobs_file), "w") as f:
+                    json.dump(cleaned_logprobs, f, default=str)  # default=str to handle numpy arrays
+                logger.info(f"Saved cleaned logprobs (None values removed) to {logprobs_file}")
+            
+            # Create new dataset without logprobs and save as parquet
+            if cleaned_dataset_rows:
+                # Convert list of dicts back to Dataset
+                cleaned_dataset = Dataset.from_list(cleaned_dataset_rows)
+                output_file_details = output_dir_details_sub_folder / f"details_{task_name}_{date_id}.parquet"
+                with self.fs.open(str(output_file_details), "wb") as f:
+                    cleaned_dataset.to_parquet(f)
+                logger.info(f"Saved cleaned details (without logprobs) to {output_file_details}")
+            else:
+                # Fallback: save original dataset if no rows to clean
+                output_file_details = output_dir_details_sub_folder / f"details_{task_name}_{date_id}.parquet"
+                with self.fs.open(str(output_file_details), "wb") as f:
+                    dataset.to_parquet(f)
 
     def generate_final_dict(self) -> dict:
         """Aggregates and returns all the logger's experiment information in a dictionary.

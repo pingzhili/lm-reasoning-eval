@@ -368,7 +368,8 @@ class VLLMModel(LightevalModel):
                 output_token_ids = [outputs.token_ids for outputs in vllm_output.outputs]
                 output_logprobs = [
                     [{str(idx): {"logprob": lp.logprob, "rank": lp.rank, "decoded_token": lp.decoded_token} 
-                      for idx, lp in token_logprobs.items() if lp is not None} for token_logprobs in outputs.logprobs]
+                      for idx, lp in token_logprobs.items() 
+                      if lp is not None and hasattr(lp, 'logprob') and lp.logprob is not None} for token_logprobs in outputs.logprobs]
                     for outputs in vllm_output.outputs
                 ]
                 result = [output.text for output in vllm_output.outputs]
