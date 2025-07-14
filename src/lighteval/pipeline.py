@@ -299,7 +299,14 @@ class Pipeline:
             logger.info(f"Running {sampling_method} requests")
             match sampling_method:
                 case SamplingMethod.GENERATIVE:
-                    model_outputs = await self.model.greedy_until(docs)
+                    # Check if model supports self-judging thinking
+                    if hasattr(self.model, '_config') and hasattr(self.model._config, 'self_judge_thinking') and self.model._config.self_judge_thinking:
+                        # Note: greedy_until_self_judge is sync, so we need to handle it differently
+                        # For now, async models don't support self-judging
+                        logger.warning("Async models don't support self-judging thinking. Using regular greedy_until.")
+                        model_outputs = await self.model.greedy_until(docs)
+                    else:
+                        model_outputs = await self.model.greedy_until(docs)
                     outputs[sampling_method] = model_outputs
                 case SamplingMethod.LOGPROBS:
                     model_outputs = await self.model.loglikelihood(docs)
@@ -315,7 +322,11 @@ class Pipeline:
             logger.info(f"Running {sampling_method} requests")
             match sampling_method:
                 case SamplingMethod.GENERATIVE:
-                    model_outputs = self.model.greedy_until(docs)
+                    # Check if model supports self-judging thinking
+                    if hasattr(self.model, '_config') and hasattr(self.model._config, 'self_judge_thinking') and self.model._config.self_judge_thinking:
+                        model_outputs = self.model.greedy_until_self_judge(docs)
+                    else:
+                        model_outputs = self.model.greedy_until(docs)
                     outputs[sampling_method] = model_outputs
                 case SamplingMethod.LOGPROBS:
                     model_outputs = self.model.loglikelihood(docs)

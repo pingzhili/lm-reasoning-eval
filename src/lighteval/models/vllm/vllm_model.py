@@ -169,6 +169,7 @@ class VLLMModelConfig(ModelConfig):
     is_async: bool = False  # Whether to use the async version or sync version of the model
 
     enable_thinking: bool = True # if you can think, think
+    self_judge_thinking: bool = False  # whether to let model self-judge if thinking is needed per question
 
 
 class VLLMModel(LightevalModel):
@@ -385,6 +386,91 @@ class VLLMModel(LightevalModel):
                 results.append(cur_response)
 
         return dataset.get_original_order(results)
+
+    # Self-judging thinking prompt template
+    THINKING_JUDGE_TEMPLATE = """Analyze the following question and determine if it requires step-by-step thinking to solve correctly:
+
+Question: {question}
+
+Does this question require careful reasoning or step-by-step thinking? Answer with only 'YES' or 'NO'."""
+
+    def _create_judge_doc(self, doc: Doc) -> Doc:
+        """Create a judgment doc from the original doc."""
+        judge_prompt = self.THINKING_JUDGE_TEMPLATE.format(question=doc.query)
+        
+        # Create a new doc for judgment with the same structure but different query
+        judge_doc = Doc(
+            query=judge_prompt,
+            choices=["YES", "NO"],  # For judgment, we only need these two options
+            gold_index=0,  # Dummy gold index
+            task_name=doc.task_name,
+            instruction=doc.instruction,
+            unconditioned_query="",
+            num_asked_few_shots=0,  # No few-shot for judgment
+            num_effective_few_shots=0,
+            original_query=doc.original_query,
+            id=doc.id,
+            num_samples=1,  # Always single sample for judgment
+            generation_size=10,  # Small size for YES/NO
+            stop_sequences=doc.stop_sequences,
+        )
+        return judge_doc
+
+    def _parse_thinking_judgment(self, response_text: str) -> bool:
+        """Parse the judgment response to determine if thinking is needed."""
+        # Extract the first generated text (in case of multiple samples)
+        if isinstance(response_text, list):
+            response_text = response_text[0] if response_text else ""
+        
+        # Clean and normalize the response
+        response_text = response_text.strip().upper()
+        
+        # Check if the response contains YES
+        return "YES" in response_text
+
+    def greedy_until_self_judge(
+        self,
+        docs: list[Doc],
+    ) -> list[ModelResponse]:
+        """
+        Two-step generation process:
+        1. Ask model if thinking is needed for each question
+        2. Generate answer with or without thinking based on judgment
+        """
+        if not self._config.self_judge_thinking:
+            # If self-judging is disabled, use the regular greedy_until
+            return self.greedy_until(docs)
+        
+        # Step 1: Create judgment requests
+        judge_docs = [self._create_judge_doc(doc) for doc in docs]
+        
+        # Generate judgments
+        judge_responses = self.greedy_until(judge_docs)
+        
+        # Step 2: Prepare for actual generation with dynamic thinking
+        # We need to temporarily modify the prompt manager's enable_thinking for each request
+        results = []
+        
+        # Process each doc individually based on its judgment
+        for doc, judge_response in zip(docs, judge_responses):
+            needs_thinking = self._parse_thinking_judgment(judge_response.text)
+            
+            # Temporarily set enable_thinking based on judgment
+            original_enable_thinking = self.prompt_manager.enable_thinking
+            self.prompt_manager.enable_thinking = needs_thinking
+            
+            # Generate the actual response
+            response = self.greedy_until([doc])[0]
+            
+            # Log the self-judging decision
+            logger.info(f"Doc {doc.id}: Self-judged thinking = {needs_thinking}")
+            
+            results.append(response)
+            
+            # Restore original enable_thinking
+            self.prompt_manager.enable_thinking = original_enable_thinking
+        
+        return results
 
     def _generate(
         self,
