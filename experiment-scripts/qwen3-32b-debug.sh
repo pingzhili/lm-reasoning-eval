@@ -11,4 +11,4 @@ OUTPUT_DIR=data/evals/$MODEL-nothinking-debug
 TASK=aime24
 mkdir -p $OUTPUT_DIR/$TASK # for logging
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details  --max-samples 4 2>&1 | tee $OUTPUT_DIR/$TASK_output.log
+    --output-dir $OUTPUT_DIR --save-details  --max-samples 4 2>&1 | tee "logfile_$(date +%Y-%m-%d_%H-%M-%S).log"

@@ -11,14 +11,14 @@ mkdir -p $OUTPUT_DIR
 # AIME 2024
 TASK=aime24
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee $OUTPUT_DIR/$TASK_output.log
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logfile_$(date +%Y-%m-%d_%H-%M-%S).log"
 
 # MATH
 TASK=math_500
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee $OUTPUT_DIR/$TASK_output.log
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logfile_$(date +%Y-%m-%d_%H-%M-%S).log"
 
 # GPQA Diamond
 TASK=gsm8k
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee $OUTPUT_DIR/$TASK_output.log
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logfile_$(date +%Y-%m-%d_%H-%M-%S).log"
