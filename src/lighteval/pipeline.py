@@ -385,6 +385,10 @@ class Pipeline:
                 )
 
                 for output, doc, response in zip(outputs, docs, responses):
+                    # Add self-judgment info if available
+                    if hasattr(self.model, '_self_judgments') and doc.id in self.model._self_judgments:
+                        output['self_judged_thinking'] = self.model._self_judgments[doc.id]
+                    
                     self.evaluation_tracker.metrics_logger.log(task_name, output)
                     self.evaluation_tracker.details_logger.log(task_name, doc, response, output)
 

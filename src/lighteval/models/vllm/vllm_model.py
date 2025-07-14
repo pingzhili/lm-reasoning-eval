@@ -184,6 +184,9 @@ class VLLMModel(LightevalModel):
         self.tensor_parallel_size = config.tensor_parallel_size
         self._add_special_tokens = config.add_special_tokens if config.add_special_tokens is not None else False
         self._tokenizer = self._create_auto_tokenizer(config)
+        
+        # Store self-judgments for evaluation details
+        self._self_judgments = {}
 
         self._max_length = config.max_model_length if config.max_model_length is not None else None
 
@@ -465,6 +468,9 @@ Does this question require careful reasoning or step-by-step thinking? Answer wi
             # Log the self-judging decision
             logger.info(f"Doc {doc.id}: Self-judged thinking = {needs_thinking}")
             
+            # Store the judgment for later use in metrics
+            self._self_judgments[doc.id] = needs_thinking
+            
             results.append(response)
             
             # Restore original enable_thinking
@@ -614,6 +620,11 @@ class AsyncVLLMModel(VLLMModel):
 
     DATASET_SPLITS = 1
     is_async = True
+    
+    def __init__(self, config: VLLMModelConfig):
+        super().__init__(config)
+        # Ensure self-judgments storage is initialized for async model too
+        self._self_judgments = {}
 
     def cleanup(self):
         gc.collect()
@@ -770,6 +781,9 @@ class AsyncVLLMModel(VLLMModel):
             
             # Log the self-judging decision
             logger.info(f"Doc {doc.id}: Self-judged thinking = {needs_thinking}")
+            
+            # Store the judgment for later use in metrics
+            self._self_judgments[doc.id] = needs_thinking
             
             results.append(response[0])
             

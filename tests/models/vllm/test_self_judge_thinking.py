@@ -224,6 +224,42 @@ class TestSelfJudgeThinking(unittest.TestCase):
         self.assertEqual(model.prompt_manager.enable_thinking, original_thinking_state)
 
 
+    def test_judgment_storage(self):
+        """Test that judgments are correctly stored in the model."""
+        # Create model with self_judge_thinking enabled
+        model = VLLMModel.__new__(VLLMModel)
+        model._config = self.config
+        model._self_judgments = {}
+        model.prompt_manager = Mock()
+        model.prompt_manager.enable_thinking = True
+        
+        # Mock logger
+        import logging
+        model.logger = logging.getLogger(__name__)
+        
+        # Mock greedy_until to return different responses
+        def mock_greedy_until(docs):
+            if "determine if it requires step-by-step thinking" in docs[0].query:
+                # Judgment calls
+                return [
+                    ModelResponse(text=["NO"], logprobs=None, output_tokens=None, input_tokens=None),
+                    ModelResponse(text=["YES"], logprobs=None, output_tokens=None, input_tokens=None),
+                ]
+            else:
+                # Actual generation
+                return [ModelResponse(text=["answer"], logprobs=None, output_tokens=None, input_tokens=None)]
+        
+        model.greedy_until = Mock(side_effect=mock_greedy_until)
+        
+        # Call greedy_until_self_judge
+        model.greedy_until_self_judge(self.test_docs)
+        
+        # Verify judgments were stored
+        self.assertIn("test_1", model._self_judgments)
+        self.assertIn("test_2", model._self_judgments)
+        self.assertFalse(model._self_judgments["test_1"])  # "NO" -> False
+        self.assertTrue(model._self_judgments["test_2"])   # "YES" -> True
+
     async def test_async_greedy_until_self_judge_workflow(self):
         """Test the complete async self-judging workflow."""
         # Import AsyncVLLMModel
@@ -274,6 +310,12 @@ class TestSelfJudgeThinking(unittest.TestCase):
         # Check results were generated
         self.assertEqual(results[0].text, ["4"])  # Simple question response
         self.assertEqual(results[1].text, ["The solution is..."])  # Complex question response
+        
+        # Verify judgments were stored
+        self.assertIn("test_1", model._self_judgments)
+        self.assertIn("test_2", model._self_judgments)
+        self.assertFalse(model._self_judgments["test_1"])  # "NO" -> False
+        self.assertTrue(model._self_judgments["test_2"])   # "YES" -> True
 
 
 if __name__ == "__main__":
