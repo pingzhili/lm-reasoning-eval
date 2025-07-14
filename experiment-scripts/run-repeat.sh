@@ -23,13 +23,13 @@ echo "========================================"
 start_time=$(date +%s)
 
 # Run each script's 4 iterations in parallel
-run_script_four_times "experiment-scripts/qwen3-32b-non-thinking.sh" &
+run_script_four_times "qwen3-32b-non-thinking.sh" &
 pid1=$!
 
-run_script_four_times "experiment-scripts/qwen3-32b-self-judge.sh" &
+run_script_four_times "qwen3-32b-self-judge.sh" &
 pid2=$!
 
-run_script_four_times "experiment-scripts/qwen3-32b-thinking.sh" &
+run_script_four_times "qwen3-32b-thinking.sh" &
 pid3=$!
 
 # Wait for all background jobs to complete
