@@ -391,11 +391,11 @@ class VLLMModel(LightevalModel):
         return dataset.get_original_order(results)
 
     # Self-judging thinking prompt template
-    THINKING_JUDGE_TEMPLATE = """Analyze the following question and determine if it requires step-by-step thinking to solve correctly:
+    THINKING_JUDGE_TEMPLATE = """Analyze the following question and determine if it requires very long step-by-step thinking for you to solve correctly:
 
 Question: {question}
 
-Does this question require careful reasoning or step-by-step thinking? Answer with only 'YES' or 'NO'."""
+Does this question require very long, complex thinking? Answer with only 'YES' or 'NO'."""
 
     def _create_judge_doc(self, doc: Doc) -> Doc:
         """Create a judgment doc from the original doc."""
