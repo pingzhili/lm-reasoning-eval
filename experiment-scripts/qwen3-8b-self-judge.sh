@@ -16,7 +16,7 @@ mkdir -p $OUTPUT_DIR
 TASK=gsm8k
 echo "Running $TASK with self-judging thinking..."
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details --max-samples 10 2>&1 | tee "logfile_$(date +%Y-%m-%d_%H-%M-%S).log"
+    --output-dir $OUTPUT_DIR --save-details --max-samples 10 2>&1 | tee "log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
 ## Also test on a reasoning task
 #TASK=math_500
