@@ -7,7 +7,7 @@ run_script_four_times() {
     
     for i in {1..4}; do
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting $script_basename - Run $i/4"
-        ./experiment-scripts/"$script"
+        bash ./experiment-scripts/"$script"
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Completed $script_basename - Run $i/4"
         echo "----------------------------------------"
     done
