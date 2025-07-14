@@ -7,7 +7,7 @@ export VLLM_WORKER_MULTIPROC_METHOD=spawn # Required for vLLM
 
 MODEL=Qwen/Qwen3-8B
 # Enable both thinking capability and self-judging
-MODEL_ARGS="model_name=$MODEL,dtype=bfloat16,max_model_length=8192,gpu_memory_utilization=0.8,generation_parameters={max_new_tokens:4096,temperature:0.6,top_p:0.95,returns_logits:true},use_chat_template=true,enable_thinking=true,self_judge_thinking=true"
+MODEL_ARGS="model_name=$MODEL,dtype=bfloat16,max_model_length=8192,gpu_memory_utilization=0.8,generation_parameters={max_new_tokens:4096,temperature:0.6,top_p:0.95,returns_logits:false},use_chat_template=true,enable_thinking=true,self_judge_thinking=true"
 OUTPUT_DIR=data/evals/$MODEL-self-judge
 
 # Create output directory
