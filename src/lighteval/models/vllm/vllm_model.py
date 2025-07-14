@@ -384,7 +384,7 @@ class VLLMModel(LightevalModel):
                     text=result,
                     output_tokens=list(output_token_ids),
                     input_tokens=input_token_ids,
-                    logprobs=output_logprobs
+                    logprobs=output_logprobs if returns_logits else None,
                 )
                 results.append(cur_response)
 
