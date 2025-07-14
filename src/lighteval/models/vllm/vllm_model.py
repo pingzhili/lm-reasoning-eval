@@ -734,6 +734,50 @@ class AsyncVLLMModel(VLLMModel):
 
         return results
 
+    async def greedy_until_self_judge(
+        self,
+        docs: list[Doc],
+    ) -> list[ModelResponse]:
+        """
+        Async version of two-step generation process:
+        1. Ask model if thinking is needed for each question
+        2. Generate answer with or without thinking based on judgment
+        """
+        if not self._config.self_judge_thinking:
+            # If self-judging is disabled, use the regular greedy_until
+            return await self.greedy_until(docs)
+        
+        # Step 1: Create judgment requests
+        judge_docs = [self._create_judge_doc(doc) for doc in docs]
+        
+        # Generate judgments
+        judge_responses = await self.greedy_until(judge_docs)
+        
+        # Step 2: Prepare for actual generation with dynamic thinking
+        # We need to temporarily modify the prompt manager's enable_thinking for each request
+        results = []
+        
+        # Process each doc individually based on its judgment
+        for doc, judge_response in zip(docs, judge_responses):
+            needs_thinking = self._parse_thinking_judgment(judge_response.text)
+            
+            # Temporarily set enable_thinking based on judgment
+            original_enable_thinking = self.prompt_manager.enable_thinking
+            self.prompt_manager.enable_thinking = needs_thinking
+            
+            # Generate the actual response
+            response = await self.greedy_until([doc])
+            
+            # Log the self-judging decision
+            logger.info(f"Doc {doc.id}: Self-judged thinking = {needs_thinking}")
+            
+            results.append(response[0])
+            
+            # Restore original enable_thinking
+            self.prompt_manager.enable_thinking = original_enable_thinking
+        
+        return results
+
     async def loglikelihood(
         self,
         docs: list[Doc],

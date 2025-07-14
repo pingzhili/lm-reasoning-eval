@@ -33,6 +33,13 @@ make quality
 # Manual commands
 ruff format .
 ruff check --fix .
+
+# Type checking (if available)
+# Note: This project doesn't have mypy configured, but uses ruff for type checking
+ruff check . --select=ANN,TCH
+
+# IMPORTANT: Always run these commands after implementing new features
+# to ensure code quality and catch potential issues
 ```
 
 ### Testing

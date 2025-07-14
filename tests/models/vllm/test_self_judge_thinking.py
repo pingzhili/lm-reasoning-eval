@@ -224,5 +224,57 @@ class TestSelfJudgeThinking(unittest.TestCase):
         self.assertEqual(model.prompt_manager.enable_thinking, original_thinking_state)
 
 
+    async def test_async_greedy_until_self_judge_workflow(self):
+        """Test the complete async self-judging workflow."""
+        # Import AsyncVLLMModel
+        from lighteval.models.vllm.vllm_model import AsyncVLLMModel
+        
+        # Create model mock
+        model = AsyncVLLMModel.__new__(AsyncVLLMModel)
+        model._config = self.config
+        model.prompt_manager = Mock()
+        model.prompt_manager.enable_thinking = True
+        
+        # Mock logger to avoid import issues
+        import logging
+        model.logger = logging.getLogger(__name__)
+        
+        # Mock responses for judgment and actual generation
+        judge_responses = [
+            ModelResponse(text=["NO"], logprobs=None, output_tokens=None, input_tokens=None),  # Simple question
+            ModelResponse(text=["YES"], logprobs=None, output_tokens=None, input_tokens=None),  # Complex question
+        ]
+        
+        actual_responses = [
+            ModelResponse(text=["4"], logprobs=None, output_tokens=None, input_tokens=None),
+            ModelResponse(text=["The solution is..."], logprobs=None, output_tokens=None, input_tokens=None),
+        ]
+        
+        # Mock async greedy_until
+        async def mock_async_greedy_until(docs):
+            if len(docs) == 2 and all("determine if it requires step-by-step thinking" in doc.query for doc in docs):
+                # This is the judgment call
+                return judge_responses[:len(docs)]
+            else:
+                # This is the actual generation call
+                if "2 + 2" in docs[0].query:
+                    return [actual_responses[0]]
+                else:
+                    return [actual_responses[1]]
+        
+        model.greedy_until = mock_async_greedy_until
+        
+        # Call greedy_until_self_judge
+        import asyncio
+        results = asyncio.run(model.greedy_until_self_judge(self.test_docs))
+        
+        # Verify the workflow
+        self.assertEqual(len(results), 2)
+        
+        # Check results were generated
+        self.assertEqual(results[0].text, ["4"])  # Simple question response
+        self.assertEqual(results[1].text, ["The solution is..."])  # Complex question response
+
+
 if __name__ == "__main__":
     unittest.main()
