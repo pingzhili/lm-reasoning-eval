@@ -15,8 +15,8 @@ TASK=aime24
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
     --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_moe_topk_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
-# MATH
-TASK=math_500
+# AIME 2025
+TASK=aime25
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
     --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_moe_topk_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
@@ -29,3 +29,6 @@ lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
 #
 #export CUDA_VISIBLE_DEVICES=6,7
 #bash experiment-scripts/qwen3-moe-topk-scaling.sh 11 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 12 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 13
+#
+#export CUDA_VISIBLE_DEVICES=0,1
+#bash experiment-scripts/qwen3-moe-topk-scaling.sh 3 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 14 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 15
