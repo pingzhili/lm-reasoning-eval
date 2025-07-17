@@ -126,6 +126,8 @@ class VLLMModelConfig(ModelConfig):
             Whether to use chat templates for conversation-style prompts. Defaults to False.
         is_async (bool):
             Whether to use the async version of VLLM. Defaults to False.
+        hf_overrides (dict):
+            Overrides for HuggingFace model configuration. Defaults to empty dict.
 
     Example:
         ```python
@@ -170,6 +172,8 @@ class VLLMModelConfig(ModelConfig):
 
     enable_thinking: bool = True # if you can think, think
     self_judge_thinking: bool = False  # whether to let model self-judge if thinking is needed per question
+
+    hf_overrides: dict = None
 
 
 class VLLMModel(LightevalModel):
@@ -259,6 +263,7 @@ class VLLMModel(LightevalModel):
             "seed": int(config.seed),
             "max_num_seqs": int(config.max_num_seqs),
             "max_num_batched_tokens": int(config.max_num_batched_tokens),
+            "hf_overrides": dict(config.hf_overrides) if config.hf_overrides is not None else None,
         }
 
         if config.quantization is not None:
@@ -270,6 +275,9 @@ class VLLMModel(LightevalModel):
             self.model_args["distributed_executor_backend"] = "ray"
             self._batch_size = "auto"
             return None
+
+        if self.model_args["hf_overrides"] is not None and len(self.model_args["hf_overrides"]) > 0:
+            logger.info(f"Using HF overrides: {self.model_args['hf_overrides']}")
 
         model = LLM(**self.model_args)
 
