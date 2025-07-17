@@ -124,21 +124,46 @@ class ModelConfig(BaseModel, extra="forbid"):
                 'model': {'model_name': 'gpt2', 'use_cache': True, 'generation_parameters': {'temperature': 0.7}},
             }
         """
-        # Looking for generation_parameters in the model_args
+        # Looking for generation_parameters and other dict-like parameters
         generation_parameters_dict = None
-        pattern = re.compile(r"(\w+)=(\{.*\}|[^,]+)")
-        matches = pattern.findall(args)
-        for key, value in matches:
+        hf_overrides_dict = None
+        
+        # Use a more specific pattern to extract key={...} pairs
+        dict_pattern = re.compile(r"(\w+)=\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}")
+        dict_matches = dict_pattern.findall(args)
+        
+        for key, value in dict_matches:
             key = key.strip()
+            # Add braces back to value since they were captured separately
+            value = "{" + value + "}"
+            
             if key == "generation_parameters":
                 gen_params = re.sub(r"(\w+):", r'"\1":', value)
                 generation_parameters_dict = json.loads(gen_params)
+            elif key == "hf_overrides":
+                # Handle hf_overrides similarly
+                hf_params = re.sub(r"(\w+):", r'"\1":', value)
+                hf_overrides_dict = json.loads(hf_params)
 
-        args = re.sub(r"generation_parameters=\{.*?\},?", "", args).strip(",")
-        model_config = {k.split("=")[0]: k.split("=")[1] if "=" in k else True for k in args.split(",")}
+        # Remove all dict parameters from args before processing simple parameters
+        args = re.sub(r"\w+=\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\},?", "", args).strip(",")
+        
+        # Parse remaining simple key=value pairs
+        model_config = {}
+        if args:  # Only process if there are remaining args
+            for pair in args.split(","):
+                pair = pair.strip()
+                if "=" in pair:
+                    k, v = pair.split("=", 1)
+                    model_config[k] = v
+                elif pair:  # Boolean flags without values
+                    model_config[pair] = True
 
+        # Add the parsed dict parameters back
         if generation_parameters_dict is not None:
             model_config["generation_parameters"] = generation_parameters_dict
+        if hf_overrides_dict is not None:
+            model_config["hf_overrides"] = hf_overrides_dict
 
         return model_config
 
