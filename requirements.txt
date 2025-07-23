@@ -5,8 +5,7 @@ datasets
 torch
 transformers
 python_dateutil
-# flash-attn==2.5.8
-flash-attn
+flash-attn==2.5.8
 
 # math_eval
 sympy==1.12
