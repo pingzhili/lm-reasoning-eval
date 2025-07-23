@@ -40,9 +40,19 @@ if TYPE_CHECKING:
 
 
 class PromptManager:
-    def __init__(self, use_chat_template: bool = False, tokenizer=None, system_prompt: str | None = None, enable_thinking: bool = True):
+    def __init__(
+            self,
+            use_chat_template: bool = False,
+            tokenizer=None,
+            system_prompt: str | None = None,
+            enable_thinking: bool = True,
+            chat_template: str | None = None,
+    ):
         self.use_chat_template = use_chat_template
         self.tokenizer = tokenizer
+        if chat_template is not None:
+            self.tokenizer.chat_template = chat_template
+            logger.info(f"Using custom chat template: {chat_template}")
         self.system_prompt = system_prompt  # System prompt to be used in chat templates
         self.enable_thinking = enable_thinking
         logger.info(f"Setting enable_thinking to {enable_thinking}")

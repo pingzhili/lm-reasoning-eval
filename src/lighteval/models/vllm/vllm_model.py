@@ -172,6 +172,7 @@ class VLLMModelConfig(ModelConfig):
 
     enable_thinking: bool = True # if you can think, think
     self_judge_thinking: bool = False  # whether to let model self-judge if thinking is needed per question
+    chat_template: str | None = None
 
     hf_overrides: dict = None
 
@@ -208,7 +209,11 @@ class VLLMModel(LightevalModel):
         self.pairwise_tokenization = config.pairwise_tokenization
 
         self.prompt_manager = PromptManager(
-            self.use_chat_template, self.tokenizer, config.system_prompt, enable_thinking=config.enable_thinking
+            use_chat_template=self.use_chat_template,
+            tokenizer=self.tokenizer,
+            system_prompt=config.system_prompt,
+            enable_thinking=config.enable_thinking,
+            chat_template=config.chat_template,
         )
 
     @property

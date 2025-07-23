@@ -10,16 +10,6 @@ OUTPUT_DIR=data/evals/sft-qwen-32b-base-open_r1_math_94k_mixed_0722-1254-step-$S
 mkdir -p $OUTPUT_DIR
 mkdir -p logs/
 
-# AIME 2024
-TASK=aime24
-lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
-
-# AIME 2025
-TASK=aime25
-lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
-
 # MATH
 TASK=math_500
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
@@ -32,5 +22,15 @@ lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
 
 # GPQA Diamond
 TASK=gpqa:diamond
+lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+
+# AIME 2024
+TASK=aime24
+lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+
+# AIME 2025
+TASK=aime25
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
     --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
