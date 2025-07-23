@@ -10,15 +10,15 @@ MODEL_ARGS="model_name=$MODEL,dtype=bfloat16,max_model_length=32768,gpu_memory_u
 OUTPUT_DIR=data/evals/$MODEL/topk-$MOE_TOPK
 mkdir -p $OUTPUT_DIR
 
-## AIME 2024
-#TASK=aime24
-#lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-#    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_moe_topk_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
-#
-## AIME 2025
-#TASK=aime25
-#lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-#    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_moe_topk_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+# AIME 2024
+TASK=aime24
+lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_moe_topk_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+
+# AIME 2025
+TASK=aime25
+lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_moe_topk_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
 # GSM8K
 TASK=gsm8k
@@ -31,14 +31,27 @@ lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
     --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_moe_topk_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
 ###
-#export CUDA_VISIBLE_DEVICES=2,3
-#bash experiment-scripts/qwen3-moe-topk-scaling.sh 4 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 5 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 6
+#export CUDA_VISIBLE_DEVICES=0
+#bash experiment-scripts/qwen3-moe-topk-scaling.sh 3
 #
-#export CUDA_VISIBLE_DEVICES=4,5
-#bash experiment-scripts/qwen3-moe-topk-scaling.sh 7 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 9 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 10
+#export CUDA_VISIBLE_DEVICES=1
+#bash experiment-scripts/qwen3-moe-topk-scaling.sh 5 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 6
 #
-#export CUDA_VISIBLE_DEVICES=6,7
-#bash experiment-scripts/qwen3-moe-topk-scaling.sh 11 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 12 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 13
+#export CUDA_VISIBLE_DEVICES=2
+#bash experiment-scripts/qwen3-moe-topk-scaling.sh 7 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 8
 #
-#export CUDA_VISIBLE_DEVICES=0,1
-#bash experiment-scripts/qwen3-moe-topk-scaling.sh 3 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 14 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 15
+#export CUDA_VISIBLE_DEVICES=3
+#bash experiment-scripts/qwen3-moe-topk-scaling.sh 9 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 10
+#
+#export CUDA_VISIBLE_DEVICES=4
+#bash experiment-scripts/qwen3-moe-topk-scaling.sh 11 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 12
+#
+#export CUDA_VISIBLE_DEVICES=5
+#bash experiment-scripts/qwen3-moe-topk-scaling.sh 13 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 14
+#
+#export CUDA_VISIBLE_DEVICES=6
+#bash experiment-scripts/qwen3-moe-topk-scaling.sh 15 && bash experiment-scripts/qwen3-moe-topk-scaling.sh 16
+#
+#export CUDA_VISIBLE_DEVICES=7
+#bash experiment-scripts/qwen3-moe-topk-scaling.sh 4
+
