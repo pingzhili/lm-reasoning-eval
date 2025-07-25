@@ -5,7 +5,7 @@ export VLLM_WORKER_MULTIPROC_METHOD=spawn # Required for vLLM
 
 STEP=${1-"00000360"}
 MODEL=/root/supervised-finetuning-qwen-32b-base-open_r1_math_94k_mixed_0722-1254_hf/step_$STEP
-MODEL_ARGS="model_name=$MODEL,dtype=bfloat16,max_model_length=32768,gpu_memory_utilization=0.8,generation_parameters={max_new_tokens:32768,temperature:0.6,top_p:0.95,returns_logits:false},use_chat_template=true,enable_thinking=false"
+MODEL_ARGS="model_name=$MODEL,dtype=bfloat16,max_model_length=32768,gpu_memory_utilization=0.8,generation_parameters={max_new_tokens:32768,temperature:0.6,top_p:0.95,returns_logits:false},use_chat_template=true,enable_thinking=false,hf_overrides={eos_token_id:151645}"
 OUTPUT_DIR=data/evals/sft-qwen-32b-base-open_r1_math_94k_mixed_0722-1254-step-$STEP
 mkdir -p $OUTPUT_DIR
 mkdir -p logs/
