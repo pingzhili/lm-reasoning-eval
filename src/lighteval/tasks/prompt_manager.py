@@ -41,12 +41,12 @@ if TYPE_CHECKING:
 
 class PromptManager:
     def __init__(
-            self,
-            use_chat_template: bool = False,
-            tokenizer=None,
-            system_prompt: str | None = None,
-            enable_thinking: bool = True,
-            chat_template: str | None = None,
+        self,
+        use_chat_template: bool = False,
+        tokenizer=None,
+        system_prompt: str | None = None,
+        enable_thinking: bool = True,
+        chat_template: str | None = None,
     ):
         self.use_chat_template = use_chat_template
         self.tokenizer = tokenizer

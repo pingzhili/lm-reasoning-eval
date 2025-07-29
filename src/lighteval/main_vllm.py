@@ -44,6 +44,9 @@ def vllm(
     cot_prompt: Annotated[
         Optional[str], Option(help="Use chain of thought prompt for evaluation.", rich_help_panel=HELP_PANEL_NAME_4)
     ] = None,
+    num_repeats: Annotated[
+        int, Option(help="Number of times to repeat evaluation for each sample.", rich_help_panel=HELP_PANEL_NAME_1)
+    ] = 1,
     dataset_loading_processes: Annotated[
         int, Option(help="Number of processes to use for dataset loading.", rich_help_panel=HELP_PANEL_NAME_1)
     ] = 1,
@@ -126,6 +129,7 @@ def vllm(
         max_samples=max_samples,
         cot_prompt=cot_prompt,
         load_responses_from_details_date_id=load_responses_from_details_date_id,
+        num_repeats=num_repeats,
     )
 
     if model_args.endswith(".yaml"):

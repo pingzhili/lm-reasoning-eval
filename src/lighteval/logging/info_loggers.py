@@ -196,6 +196,7 @@ class DetailsLogger:
         doc: Doc
         model_response: ModelResponse
         metric: dict
+        repeat_idx: int = 0
 
     @dataclass
     class CompiledDetail:
@@ -303,6 +304,7 @@ class DetailsLogger:
         doc: Doc,
         model_response: ModelResponse,
         metrics: dict,
+        repeat_idx: int = 0,
     ) -> None:
         """Stores the relevant information for one sample of one task to the total list of samples stored in the DetailsLogger.
 
@@ -315,7 +317,7 @@ class DetailsLogger:
             llm_as_prompt_judgement (tuple[str, str]): Tuple containing the
                 prompt passed to the judge and the judgement for the current sample when using llm-as-judge metric.
         """
-        detail = self.Detail(doc, model_response, metrics)
+        detail = self.Detail(doc, model_response, metrics, repeat_idx)
         self.details[task_name].append(detail)
 
         hash = self.Hash()
@@ -370,16 +372,18 @@ class MetricsLogger:
             Example: {"winogrande|winogrande_xl": {"accuracy": 0.5}}
     """
 
-    metrics_values: dict[str, dict[str, list[float]]] = field(
-        default_factory=lambda: collections.defaultdict(lambda: collections.defaultdict(list))
+    metrics_values: dict[str, dict[str, dict[int, list[float]]]] = field(
+        default_factory=lambda: collections.defaultdict(
+            lambda: collections.defaultdict(lambda: collections.defaultdict(list))
+        )
     )
     metric_aggregated: dict[str, dict[str, float]] = field(
         default_factory=lambda: collections.defaultdict(lambda: collections.defaultdict(float))
     )
 
-    def log(self, task_name: str, metrics: dict) -> None:
+    def log(self, task_name: str, metrics: dict, repeat_idx: int = 0) -> None:
         for metric_name, metric_value in metrics.items():
-            self.metrics_values[task_name][metric_name].append(metric_value)
+            self.metrics_values[task_name][metric_name][repeat_idx].append(metric_value)
 
     def aggregate(self, task_dict: dict[str, LightevalTask], bootstrap_iters: int = 1000):  # noqa: C901
         """
@@ -395,39 +399,67 @@ class MetricsLogger:
             task = task_dict[task_name]
 
             skip_metric = []
-            for metric_name, metric_values in metrics.items():
+            for metric_name, repeat_data in metrics.items():
                 if metric_name in skip_metric:
                     # The metric is in a subset which has already been computed and saved
                     continue
 
-                try:
-                    metric_result = task.aggregation()[metric_name](metric_values)
-                except OverflowError:
-                    logger.warning(f"{task_name}, {metric_name} got an OVERFLOW ERROR when aggregating.")
-                    metric_result = float("nan")
-                except KeyError:
-                    continue
+                # Check if we have multiple repeats
+                num_repeats = len(repeat_data)
 
-                if isinstance(metric_result, dict):  # For some corpus level grouping metrics
-                    self.metric_aggregated[task_name].update(metric_result)
-                    skip_metric.extend(list(metric_result.keys()))  # no need to recompute them later
-                else:
-                    self.metric_aggregated[task_name][metric_name] = metric_result
-
-                if isinstance(metric_result, dict) or bootstrap_iters == 0:
-                    stderr = (
-                        None  # We skip stderr for some corpus metrics that return dicts, or if bootstrap_iters is 0
-                    )
-                else:
-                    aggregation = task.aggregation()[metric_name]
-                    stderr = get_stderr_function(aggregation=aggregation, number_experiments=bootstrap_iters)
-                if stderr is not None and len(metric_values) > 1:
+                if num_repeats == 1:
+                    # Single repeat case - use original logic
+                    metric_values = repeat_data[0]
                     try:
-                        self.metric_aggregated[task_name][f"{metric_name}_stderr"] = stderr(metric_values)
+                        metric_result = task.aggregation()[metric_name](metric_values)
                     except OverflowError:
-                        # Is this need or should we just pass?
-                        self.metric_aggregated[task_name][f"{metric_name}_stderr"] = float("nan")
-                        logger.warning(f"{task_name}, {metric_name} got an OVERFLOW ERROR when computing stderr.")
+                        logger.warning(f"{task_name}, {metric_name} got an OVERFLOW ERROR when aggregating.")
+                        metric_result = float("nan")
+                    except KeyError:
+                        continue
+
+                    if isinstance(metric_result, dict):  # For some corpus level grouping metrics
+                        self.metric_aggregated[task_name].update(metric_result)
+                        skip_metric.extend(list(metric_result.keys()))  # no need to recompute them later
+                    else:
+                        self.metric_aggregated[task_name][metric_name] = metric_result
+
+                    if isinstance(metric_result, dict) or bootstrap_iters == 0:
+                        stderr = None  # We skip stderr for some corpus metrics that return dicts, or if bootstrap_iters is 0
+                    else:
+                        aggregation = task.aggregation()[metric_name]
+                        stderr = get_stderr_function(aggregation=aggregation, number_experiments=bootstrap_iters)
+                    if stderr is not None and len(metric_values) > 1:
+                        try:
+                            self.metric_aggregated[task_name][f"{metric_name}_stderr"] = stderr(metric_values)
+                        except OverflowError:
+                            self.metric_aggregated[task_name][f"{metric_name}_stderr"] = float("nan")
+                            logger.warning(f"{task_name}, {metric_name} got an OVERFLOW ERROR when computing stderr.")
+                else:
+                    # Multiple repeats case - aggregate each repeat then compute statistics
+                    repeat_results = []
+
+                    for repeat_idx in sorted(repeat_data.keys()):
+                        metric_values = repeat_data[repeat_idx]
+                        try:
+                            repeat_result = task.aggregation()[metric_name](metric_values)
+                            if not isinstance(repeat_result, dict):  # Skip dict results for now
+                                repeat_results.append(repeat_result)
+                        except (OverflowError, KeyError):
+                            continue
+
+                    if repeat_results:
+                        # Compute average and std across repeats
+                        import numpy as np
+
+                        avg_result = np.mean(repeat_results)
+                        std_result = np.std(repeat_results)
+
+                        self.metric_aggregated[task_name][metric_name] = {
+                            "repeats": repeat_results,
+                            "average": avg_result,
+                            "std": std_result,
+                        }
 
         # We group subtasks which belong to the same parent task, like MMLU, to compute an average on them
         # and compute an average of all metrics

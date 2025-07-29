@@ -169,10 +169,18 @@ def make_results_table(result_dict):
             if m.endswith("_stderr"):
                 continue
 
-            if m + "_stderr" in dic:
+            # Handle new format with repeats
+            if isinstance(v, dict) and "average" in v and "std" in v:
+                # Multiple repeats case - show average ± std
+                avg = v["average"]
+                std = v["std"]
+                values.append([k, version, m, "%.4f" % avg, "±", "%.4f" % std])
+            elif m + "_stderr" in dic:
+                # Original format with stderr
                 se = dic[m + "_stderr"]
                 values.append([k, version, m, "%.4f" % v, "±", "%.4f" % se])
             else:
+                # Simple value without stderr
                 values.append([k, version, m, "%.4f" % v, "", ""])
             k = ""
             version = ""

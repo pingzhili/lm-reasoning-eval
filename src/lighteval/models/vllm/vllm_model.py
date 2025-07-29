@@ -170,7 +170,7 @@ class VLLMModelConfig(ModelConfig):
     use_chat_template: bool = False
     is_async: bool = False  # Whether to use the async version or sync version of the model
 
-    enable_thinking: bool = True # if you can think, think
+    enable_thinking: bool = True  # if you can think, think
     self_judge_thinking: bool = False  # whether to let model self-judge if thinking is needed per question
     chat_template: str | None = None
 
@@ -189,7 +189,7 @@ class VLLMModel(LightevalModel):
         self.tensor_parallel_size = config.tensor_parallel_size
         self._add_special_tokens = config.add_special_tokens if config.add_special_tokens is not None else False
         self._tokenizer = self._create_auto_tokenizer(config)
-        
+
         # Store self-judgments for evaluation details
         self._self_judgments = {}
 
@@ -384,9 +384,14 @@ class VLLMModel(LightevalModel):
             for i, vllm_output in enumerate(vllm_outputs):
                 output_token_ids = [outputs.token_ids for outputs in vllm_output.outputs]
                 output_logprobs = [
-                    [{str(idx): {"logprob": lp.logprob, "rank": lp.rank, "decoded_token": lp.decoded_token} 
-                      for idx, lp in token_logprobs.items() 
-                      if lp is not None and hasattr(lp, 'logprob') and lp.logprob is not None} for token_logprobs in outputs.logprobs]
+                    [
+                        {
+                            str(idx): {"logprob": lp.logprob, "rank": lp.rank, "decoded_token": lp.decoded_token}
+                            for idx, lp in token_logprobs.items()
+                            if lp is not None and hasattr(lp, "logprob") and lp.logprob is not None
+                        }
+                        for token_logprobs in outputs.logprobs
+                    ]
                     for outputs in vllm_output.outputs
                 ]
                 result = [output.text for output in vllm_output.outputs]
@@ -413,7 +418,7 @@ Does this question require very long, complex thinking? Answer with only 'YES' o
     def _create_judge_doc(self, doc: Doc) -> Doc:
         """Create a judgment doc from the original doc."""
         judge_prompt = self.THINKING_JUDGE_TEMPLATE.format(question=doc.query)
-        
+
         # Create a new doc for judgment with the same structure but different query
         judge_doc = Doc(
             query=judge_prompt,
@@ -437,10 +442,10 @@ Does this question require very long, complex thinking? Answer with only 'YES' o
         # Extract the first generated text (in case of multiple samples)
         if isinstance(response_text, list):
             response_text = response_text[0] if response_text else ""
-        
+
         # Clean and normalize the response
         response_text = response_text.strip().upper()
-        
+
         # Check if the response contains YES
         return "YES" in response_text
 
@@ -456,39 +461,39 @@ Does this question require very long, complex thinking? Answer with only 'YES' o
         if not self._config.self_judge_thinking:
             # If self-judging is disabled, use the regular greedy_until
             return self.greedy_until(docs)
-        
+
         # Step 1: Create judgment requests
         judge_docs = [self._create_judge_doc(doc) for doc in docs]
-        
+
         # Generate judgments
         judge_responses = self.greedy_until(judge_docs)
-        
+
         # Step 2: Prepare for actual generation with dynamic thinking
         # We need to temporarily modify the prompt manager's enable_thinking for each request
         results = []
-        
+
         # Process each doc individually based on its judgment
         for doc, judge_response in zip(docs, judge_responses):
             needs_thinking = self._parse_thinking_judgment(judge_response.text)
-            
+
             # Temporarily set enable_thinking based on judgment
             original_enable_thinking = self.prompt_manager.enable_thinking
             self.prompt_manager.enable_thinking = needs_thinking
-            
+
             # Generate the actual response
             response = self.greedy_until([doc])[0]
-            
+
             # Log the self-judging decision
             logger.info(f"Doc {doc.id}: Self-judged thinking = {needs_thinking}")
-            
+
             # Store the judgment for later use in metrics
             self._self_judgments[doc.id] = needs_thinking
-            
+
             results.append(response)
-            
+
             # Restore original enable_thinking
             self.prompt_manager.enable_thinking = original_enable_thinking
-        
+
         return results
 
     def _generate(
@@ -502,7 +507,9 @@ Does this question require very long, complex thinking? Answer with only 'YES' o
     ) -> list:
         """Contains the actual logic of the generation."""
         # remove "returns_logits" from arg dict to SamplingParams
-        sampling_params_args = {k: v for k, v in self._config.generation_parameters.to_vllm_dict().items() if k != "returns_logits"}
+        sampling_params_args = {
+            k: v for k, v in self._config.generation_parameters.to_vllm_dict().items() if k != "returns_logits"
+        }
         sampling_params = SamplingParams(**sampling_params_args)
         # sampling_params = SamplingParams(**self._config.generation_parameters.to_vllm_dict())
 
@@ -633,7 +640,7 @@ class AsyncVLLMModel(VLLMModel):
 
     DATASET_SPLITS = 1
     is_async = True
-    
+
     def __init__(self, config: VLLMModelConfig):
         super().__init__(config)
         # Ensure self-judgments storage is initialized for async model too
@@ -770,39 +777,39 @@ class AsyncVLLMModel(VLLMModel):
         if not self._config.self_judge_thinking:
             # If self-judging is disabled, use the regular greedy_until
             return await self.greedy_until(docs)
-        
+
         # Step 1: Create judgment requests
         judge_docs = [self._create_judge_doc(doc) for doc in docs]
-        
+
         # Generate judgments
         judge_responses = await self.greedy_until(judge_docs)
-        
+
         # Step 2: Prepare for actual generation with dynamic thinking
         # We need to temporarily modify the prompt manager's enable_thinking for each request
         results = []
-        
+
         # Process each doc individually based on its judgment
         for doc, judge_response in zip(docs, judge_responses):
             needs_thinking = self._parse_thinking_judgment(judge_response.text)
-            
+
             # Temporarily set enable_thinking based on judgment
             original_enable_thinking = self.prompt_manager.enable_thinking
             self.prompt_manager.enable_thinking = needs_thinking
-            
+
             # Generate the actual response
             response = await self.greedy_until([doc])
-            
+
             # Log the self-judging decision
             logger.info(f"Doc {doc.id}: Self-judged thinking = {needs_thinking}")
-            
+
             # Store the judgment for later use in metrics
             self._self_judgments[doc.id] = needs_thinking
-            
+
             results.append(response[0])
-            
+
             # Restore original enable_thinking
             self.prompt_manager.enable_thinking = original_enable_thinking
-        
+
         return results
 
     async def loglikelihood(

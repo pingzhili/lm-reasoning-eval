@@ -46,6 +46,7 @@ from lighteval.logging.info_loggers import (
 from lighteval.utils.imports import NO_TENSORBOARDX_WARN_MSG, is_nanotron_available, is_tensorboardX_available
 from lighteval.utils.utils import obj_to_markdown
 
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -120,18 +121,18 @@ class EvaluationTracker:
     """
 
     def __init__(
-            self,
-            output_dir: str,
-            results_path_template: str | None = None,
-            save_details: bool = True,
-            push_to_hub: bool = False,
-            push_to_tensorboard: bool = False,
-            hub_results_org: str | None = "",
-            tensorboard_metric_prefix: str = "eval",
-            public: bool = False,
-            nanotron_run_info: "GeneralArgs" = None,
-            wandb: bool = False,
-            returns_logits: bool = False,
+        self,
+        output_dir: str,
+        results_path_template: str | None = None,
+        save_details: bool = True,
+        push_to_hub: bool = False,
+        push_to_tensorboard: bool = False,
+        hub_results_org: str | None = "",
+        tensorboard_metric_prefix: str = "eval",
+        public: bool = False,
+        nanotron_run_info: "GeneralArgs" = None,
+        wandb: bool = False,
+        returns_logits: bool = False,
     ) -> None:
         """Creates all the necessary loggers for evaluation tracking."""
         self.details_logger = DetailsLogger()
@@ -385,16 +386,16 @@ class EvaluationTracker:
             cleaned_dataset_rows = []
 
             for row in dataset:
-                if 'model_response' in row and row['model_response'] is not None:
-                    model_response = row['model_response'].copy()
+                if "model_response" in row and row["model_response"] is not None:
+                    model_response = row["model_response"].copy()
 
                     # Extract logprobs if they exist
-                    logprobs = model_response.pop('logprobs', None)
+                    logprobs = model_response.pop("logprobs", None)
                     extracted_logprobs.append(logprobs)
 
                     # Create cleaned row without logprobs
                     cleaned_row = row.copy()
-                    cleaned_row['model_response'] = model_response
+                    cleaned_row["model_response"] = model_response
                     cleaned_dataset_rows.append(cleaned_row)
                 else:
                     # No model_response or it's None
@@ -447,10 +448,10 @@ class EvaluationTracker:
         return final_dict
 
     def push_to_hub(
-            self,
-            date_id: str,
-            details: dict[str, Dataset],
-            results_dict: dict,
+        self,
+        date_id: str,
+        details: dict[str, Dataset],
+        results_dict: dict,
     ) -> None:
         """Pushes the experiment details (all the model predictions for every step) to the hub."""
         sanitized_model_name = self.general_config_logger.model_name.replace("/", "__")
@@ -594,7 +595,7 @@ class EvaluationTracker:
                     former_entry = card_metadata[sanitized_task]
                     card_metadata[sanitized_task] = {
                         "data_files": former_entry["data_files"]
-                                      + [{"split": sanitized_eval_date, "path": [repo_file_name]}]
+                        + [{"split": sanitized_eval_date, "path": [repo_file_name]}]
                     }
             else:
                 if sanitized_task in card_metadata:
@@ -695,19 +696,19 @@ class EvaluationTracker:
 
         card_data = DatasetCardData(
             dataset_summary=f"Dataset automatically created during the evaluation run of model "
-                            f"[{self.general_config_logger.model_name}](https://huggingface.co/{self.general_config_logger.model_name})"
-                            f"{org_string}.\n\n"
-                            f"The dataset is composed of {len(card_metadata) - 1} configuration, each one corresponding to one of the evaluated task.\n\n"
-                            f"The dataset has been created from {len(results_files)} run(s). Each run can be found as a specific split in each "
-                            f'configuration, the split being named using the timestamp of the run.The "train" split is always pointing to the latest results.\n\n'
-                            f'An additional configuration "results" store all the aggregated results of the run.\n\n'
-                            f"To load the details from a run, you can for instance do the following:\n"
-                            f'```python\nfrom datasets import load_dataset\ndata = load_dataset("{repo_id}",\n\t"{sanitized_task}",\n\tsplit="train")\n```\n\n'
-                            f"## Latest results\n\n"
-                            f"These are the [latest results from run {max_last_eval_date_results}]({last_results_file_path.replace('/resolve/', '/blob/')})"
-                            f"(note that their might be results for other tasks in the repos if successive evals didn't cover the same tasks. "
-                            f'You find each in the results and the "latest" split for each eval):\n\n'
-                            f"```python\n{results_string}\n```",
+            f"[{self.general_config_logger.model_name}](https://huggingface.co/{self.general_config_logger.model_name})"
+            f"{org_string}.\n\n"
+            f"The dataset is composed of {len(card_metadata) - 1} configuration, each one corresponding to one of the evaluated task.\n\n"
+            f"The dataset has been created from {len(results_files)} run(s). Each run can be found as a specific split in each "
+            f'configuration, the split being named using the timestamp of the run.The "train" split is always pointing to the latest results.\n\n'
+            f'An additional configuration "results" store all the aggregated results of the run.\n\n'
+            f"To load the details from a run, you can for instance do the following:\n"
+            f'```python\nfrom datasets import load_dataset\ndata = load_dataset("{repo_id}",\n\t"{sanitized_task}",\n\tsplit="train")\n```\n\n'
+            f"## Latest results\n\n"
+            f"These are the [latest results from run {max_last_eval_date_results}]({last_results_file_path.replace('/resolve/', '/blob/')})"
+            f"(note that their might be results for other tasks in the repos if successive evals didn't cover the same tasks. "
+            f'You find each in the results and the "latest" split for each eval):\n\n'
+            f"```python\n{results_string}\n```",
             repo_url=f"https://huggingface.co/{self.general_config_logger.model_name}",
             pretty_name=f"Evaluation run of {self.general_config_logger.model_name}",
             leaderboard_url=leaderboard_url,
@@ -722,7 +723,7 @@ class EvaluationTracker:
         card.push_to_hub(repo_id, repo_type="dataset")
 
     def push_to_tensorboard(  # noqa: C901
-            self, results: dict[str, dict[str, float]], details: dict[str, DetailsLogger.CompiledDetail]
+        self, results: dict[str, dict[str, float]], details: dict[str, DetailsLogger.CompiledDetail]
     ):
         if not is_tensorboardX_available:
             logger.warning(NO_TENSORBOARDX_WARN_MSG)

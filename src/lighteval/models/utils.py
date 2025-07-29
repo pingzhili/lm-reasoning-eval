@@ -127,16 +127,16 @@ class ModelConfig(BaseModel, extra="forbid"):
         # Looking for generation_parameters and other dict-like parameters
         generation_parameters_dict = None
         hf_overrides_dict = None
-        
+
         # Use a more specific pattern to extract key={...} pairs
         dict_pattern = re.compile(r"(\w+)=\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}")
         dict_matches = dict_pattern.findall(args)
-        
+
         for key, value in dict_matches:
             key = key.strip()
             # Add braces back to value since they were captured separately
             value = "{" + value + "}"
-            
+
             if key == "generation_parameters":
                 gen_params = re.sub(r"(\w+):", r'"\1":', value)
                 generation_parameters_dict = json.loads(gen_params)
@@ -147,7 +147,7 @@ class ModelConfig(BaseModel, extra="forbid"):
 
         # Remove all dict parameters from args before processing simple parameters
         args = re.sub(r"\w+=\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\},?", "", args).strip(",")
-        
+
         # Parse remaining simple key=value pairs
         model_config = {}
         if args:  # Only process if there are remaining args

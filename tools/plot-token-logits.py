@@ -1,13 +1,15 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
-from IPython.display import HTML, display
-from transformers import AutoTokenizer
 import html as html_module
-from fire import Fire
+
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
-from tqdm import tqdm
+from fire import Fire
+from IPython.display import HTML, display
 from loguru import logger
+from matplotlib.colors import LinearSegmentedColormap
+from tqdm import tqdm
+from transformers import AutoTokenizer
+
 
 def visualize_token_logprobs(tokens, logprob_list, tokenizer_name="Qwen/Qwen3-32B", method="html"):
     """
@@ -27,7 +29,7 @@ def visualize_token_logprobs(tokens, logprob_list, tokenizer_name="Qwen/Qwen3-32
         logger.info(f"Warning: logprob_list length ({len(logprob_list)}) doesn't match token count ({len(tokens)})")
         # Truncate or pad as needed
         if len(logprob_list) > len(tokens):
-            logprob_list = logprob_list[:len(tokens)]
+            logprob_list = logprob_list[: len(tokens)]
         else:
             logprob_list = logprob_list + [min(logprob_list)] * (len(tokens) - len(logprob_list))
 
@@ -62,24 +64,26 @@ def create_html_visualization(token_strings, normalized_logprobs, original_logpr
         escaped_token = html_module.escape(token)
 
         # Create span with color and tooltip
-        span = f'<span style="background-color: rgb({r}, {g}, {b}); color: white; ' \
-               f'padding: 2px 1px; margin: 0 1px; border-radius: 3px; ' \
-               f'display: inline-block;" title="logprob: {orig_prob:.4f}">' \
-               f'{escaped_token}</span>'
+        span = (
+            f'<span style="background-color: rgb({r}, {g}, {b}); color: white; '
+            f"padding: 2px 1px; margin: 0 1px; border-radius: 3px; "
+            f'display: inline-block;" title="logprob: {orig_prob:.4f}">'
+            f"{escaped_token}</span>"
+        )
 
         html_parts.append(span)
 
-    html_parts.append('</div>')
+    html_parts.append("</div>")
 
     # Add legend
     html_parts.append(create_color_legend())
 
-    return ''.join(html_parts)
+    return "".join(html_parts)
 
 
 def create_color_legend():
     """Create a color legend for the visualization."""
-    legend_html = '''
+    legend_html = """
     <div style="margin-top: 20px; font-family: Arial, sans-serif;">
         <h4>Log Probability Scale</h4>
         <div style="display: flex; align-items: center; margin-bottom: 10px;">
@@ -89,20 +93,19 @@ def create_color_legend():
             <span style="margin-left: 10px;">High</span>
         </div>
     </div>
-    '''
+    """
     return legend_html
 
 
 def create_matplotlib_visualization(token_strings, normalized_logprobs, original_logprobs):
     """Create a matplotlib visualization with colored tokens."""
     # Create figure
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 8),
-                                   gridspec_kw={'height_ratios': [4, 1], 'hspace': 0.3})
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 8), gridspec_kw={"height_ratios": [4, 1], "hspace": 0.3})
 
     # Create colormap from light red to dark red
-    colors = ['#FFC8C8', '#8B0000']  # Light red to dark red
+    colors = ["#FFC8C8", "#8B0000"]  # Light red to dark red
     n_bins = 100
-    cmap = LinearSegmentedColormap.from_list('logprob', colors, N=n_bins)
+    cmap = LinearSegmentedColormap.from_list("logprob", colors, N=n_bins)
 
     # Calculate positions for tokens
     x_pos = 0
@@ -126,31 +129,34 @@ def create_matplotlib_visualization(token_strings, normalized_logprobs, original
     # Plot tokens
     for i, (token, pos, norm_prob) in enumerate(zip(token_strings, positions, normalized_logprobs)):
         color = cmap(norm_prob)
-        ax1.text(pos[0], pos[1], token,
-                 color='black',
-                 bbox=dict(boxstyle="round,pad=0.3", facecolor=color, edgecolor='none'),
-                 fontsize=10,
-                 family='monospace',
-                 verticalalignment='center')
+        ax1.text(
+            pos[0],
+            pos[1],
+            token,
+            color="black",
+            bbox=dict(boxstyle="round,pad=0.3", facecolor=color, edgecolor="none"),
+            fontsize=10,
+            family="monospace",
+            verticalalignment="center",
+        )
 
     # Set up main plot
     ax1.set_xlim(-0.02, 1.02)
     ax1.set_ylim(min(-0.2, min(p[1] for p in positions) - 0.1), 0.1)
-    ax1.axis('off')
-    ax1.set_title('Token Log Probability Visualization', fontsize=16, pad=20)
+    ax1.axis("off")
+    ax1.set_title("Token Log Probability Visualization", fontsize=16, pad=20)
 
     # Create colorbar
     sm = plt.cm.ScalarMappable(cmap=cmap)
     sm.set_array([])
-    cbar = plt.colorbar(sm, cax=ax2, orientation='horizontal')
-    cbar.set_label('Log Probability (normalized)', fontsize=12)
+    cbar = plt.colorbar(sm, cax=ax2, orientation="horizontal")
+    cbar.set_label("Log Probability (normalized)", fontsize=12)
 
     # Add min/max labels
     min_logprob = min(original_logprobs)
     max_logprob = max(original_logprobs)
-    ax2.text(0, -0.5, f'Min: {min_logprob:.4f}', transform=ax2.transAxes, fontsize=10)
-    ax2.text(1, -0.5, f'Max: {max_logprob:.4f}', transform=ax2.transAxes,
-             fontsize=10, ha='right')
+    ax2.text(0, -0.5, f"Min: {min_logprob:.4f}", transform=ax2.transAxes, fontsize=10)
+    ax2.text(1, -0.5, f"Max: {max_logprob:.4f}", transform=ax2.transAxes, fontsize=10, ha="right")
 
     plt.tight_layout()
     return fig
@@ -167,10 +173,7 @@ def example_usage():
 
     # Create HTML visualization
     html_viz = visualize_token_logprobs(
-        example_string,
-        example_logprobs,
-        tokenizer_name="Qwen/Qwen3-32B",
-        method="html"
+        example_string, example_logprobs, tokenizer_name="Qwen/Qwen3-32B", method="html"
     )
 
     # Display in Jupyter notebook
@@ -178,10 +181,7 @@ def example_usage():
 
     # Create matplotlib visualization
     fig = visualize_token_logprobs(
-        example_string,
-        example_logprobs,
-        tokenizer_name="Qwen/Qwen3-32B",
-        method="matplotlib"
+        example_string, example_logprobs, tokenizer_name="Qwen/Qwen3-32B", method="matplotlib"
     )
     plt.show()
 
@@ -195,7 +195,8 @@ def visualize_with_token_info(tokens, logprob_list, tokenizer_name="Qwen/Qwen3-3
     token_strings = [tokenizer.decode([token]) for token in tokens]
 
     # Create detailed HTML with token information
-    html_parts = ['''
+    html_parts = [
+        """
     <style>
         .token-viz { 
             font-family: 'Courier New', monospace; 
@@ -245,10 +246,11 @@ def visualize_with_token_info(tokens, logprob_list, tokenizer_name="Qwen/Qwen3-3
         }
     </style>
     <div class="token-viz">
-    ''']
+    """
+    ]
 
     # Normalize logprobs
-    logprobs_array = np.array(logprob_list[:len(tokens)])
+    logprobs_array = np.array(logprob_list[: len(tokens)])
     min_logprob = np.min(logprobs_array)
     max_logprob = np.max(logprobs_array)
 
@@ -264,21 +266,21 @@ def visualize_with_token_info(tokens, logprob_list, tokenizer_name="Qwen/Qwen3-3
         g = int(200 - 200 * norm_prob)
         b = int(200 - 200 * norm_prob)
 
-        escaped_token = html_module.escape(token).replace(' ', '&nbsp;')
+        escaped_token = html_module.escape(token).replace(" ", "&nbsp;")
 
-        html_parts.append(f'''
+        html_parts.append(f"""
         <span class="token" style="background-color: rgb({r}, {g}, {b});">
             {escaped_token}
             <span class="token-info">
                 Token #{i} | ID: {tokens[i]} | LogProb: {orig_prob:.4f}
             </span>
         </span>
-        ''')
+        """)
 
-    html_parts.append('</div>')
+    html_parts.append("</div>")
 
     # Add statistics
-    html_parts.append(f'''
+    html_parts.append(f"""
     <div class="stats">
         <h4>Token Statistics</h4>
         <p><strong>Total tokens:</strong> {len(tokens)}</p>
@@ -287,18 +289,18 @@ def visualize_with_token_info(tokens, logprob_list, tokenizer_name="Qwen/Qwen3-3
         <p><strong>Max log probability:</strong> {max_logprob:.4f}</p>
         <p><strong>Std deviation:</strong> {np.std(logprobs_array):.4f}</p>
     </div>
-    ''')
+    """)
 
     # Add color legend
     html_parts.append(create_color_legend())
 
-    return ''.join(html_parts)
+    return "".join(html_parts)
 
 
 # Utility function to save visualization
 def save_visualization(html_content, filename="token_visualization.html"):
     """Save the HTML visualization to a file."""
-    full_html = f'''
+    full_html = f"""
     <!DOCTYPE html>
     <html>
     <head>
@@ -309,15 +311,14 @@ def save_visualization(html_content, filename="token_visualization.html"):
         {html_content}
     </body>
     </html>
-    '''
+    """
 
-    with open(filename, 'w', encoding='utf-8') as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write(full_html)
     logger.info(f"Visualization saved to {filename}")
 
 
 def main_single_sample(df, sample_id: int, exp_name: str):
-
     metric = next(iter(df.metric[sample_id].values()))
     model_response = df.model_response[sample_id]
 
@@ -336,7 +337,7 @@ def main_single_sample(df, sample_id: int, exp_name: str):
     save_visualization(enhanced_html, f"plots/{exp_name}-logprobs-{sample_id}.html")
 
 
-def main(detail_file_path: str, sample_id: int = None, exp_name: str="default"):
+def main(detail_file_path: str, sample_id: int = None, exp_name: str = "default"):
     df = pd.read_parquet(detail_file_path)
 
     if sample_id is None:

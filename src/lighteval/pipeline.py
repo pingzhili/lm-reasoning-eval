@@ -104,6 +104,7 @@ class PipelineParameters:
     cot_prompt: str | None = None
     load_responses_from_details_date_id: str | None = None
     bootstrap_iters: int = 1000
+    num_repeats: int = 1
 
     def __post_init__(self):  # noqa C901
         if self.launcher_type == ParallelismManager.ACCELERATE:
@@ -273,18 +274,23 @@ class Pipeline:
             config=self.model_config,
         )
 
-        if self.pipeline_parameters.load_responses_from_details_date_id:
-            try:
-                outputs = self._load_responses_from_details()
-            except FileNotFoundError as e:
-                logger.warning(
-                    f"No responses found for {self.pipeline_parameters.load_responses_from_details_date_id} in details directory: {e}. Running model instead."
-                )
-                outputs = self._run_model()
-        else:
-            outputs = self._run_model()
+        # Run evaluation for each repeat
+        for repeat_idx in range(self.pipeline_parameters.num_repeats):
+            if self.pipeline_parameters.num_repeats > 1:
+                logger.info(f"--- STARTING REPEAT {repeat_idx + 1}/{self.pipeline_parameters.num_repeats} ---")
 
-        self._compute_metrics(outputs)
+            if self.pipeline_parameters.load_responses_from_details_date_id:
+                try:
+                    outputs = self._load_responses_from_details()
+                except FileNotFoundError as e:
+                    logger.warning(
+                        f"No responses found for {self.pipeline_parameters.load_responses_from_details_date_id} in details directory: {e}. Running model instead."
+                    )
+                    outputs = self._run_model()
+            else:
+                outputs = self._run_model()
+
+            self._compute_metrics(outputs, repeat_idx=repeat_idx)
 
         if self.is_main_process():
             self.evaluation_tracker.general_config_logger.log_end_time()
@@ -300,7 +306,11 @@ class Pipeline:
             match sampling_method:
                 case SamplingMethod.GENERATIVE:
                     # Check if model supports self-judging thinking
-                    if hasattr(self.model, '_config') and hasattr(self.model._config, 'self_judge_thinking') and self.model._config.self_judge_thinking:
+                    if (
+                        hasattr(self.model, "_config")
+                        and hasattr(self.model._config, "self_judge_thinking")
+                        and self.model._config.self_judge_thinking
+                    ):
                         model_outputs = await self.model.greedy_until_self_judge(docs)
                     else:
                         model_outputs = await self.model.greedy_until(docs)
@@ -320,7 +330,11 @@ class Pipeline:
             match sampling_method:
                 case SamplingMethod.GENERATIVE:
                     # Check if model supports self-judging thinking
-                    if hasattr(self.model, '_config') and hasattr(self.model._config, 'self_judge_thinking') and self.model._config.self_judge_thinking:
+                    if (
+                        hasattr(self.model, "_config")
+                        and hasattr(self.model._config, "self_judge_thinking")
+                        and self.model._config.self_judge_thinking
+                    ):
                         model_outputs = self.model.greedy_until_self_judge(docs)
                     else:
                         model_outputs = self.model.greedy_until(docs)
@@ -349,7 +363,7 @@ class Pipeline:
 
         return outputs
 
-    def _compute_metrics(self, sampling_method_responses: dict[str, list[ModelResponse]]):
+    def _compute_metrics(self, sampling_method_responses: dict[str, list[ModelResponse]], repeat_idx: int = 0):
         # To compute the metrics we first group the samples and task and then by metrics.
         # This way we can batch the metrics computation for each task and metric category
 
@@ -386,11 +400,11 @@ class Pipeline:
 
                 for output, doc, response in zip(outputs, docs, responses):
                     # Add self-judgment info if available
-                    if hasattr(self.model, '_self_judgments') and doc.id in self.model._self_judgments:
-                        output['self_judged_thinking'] = self.model._self_judgments[doc.id]
-                    
-                    self.evaluation_tracker.metrics_logger.log(task_name, output)
-                    self.evaluation_tracker.details_logger.log(task_name, doc, response, output)
+                    if hasattr(self.model, "_self_judgments") and doc.id in self.model._self_judgments:
+                        output["self_judged_thinking"] = self.model._self_judgments[doc.id]
+
+                    self.evaluation_tracker.metrics_logger.log(task_name, output, repeat_idx=repeat_idx)
+                    self.evaluation_tracker.details_logger.log(task_name, doc, response, output, repeat_idx=repeat_idx)
 
     def _load_responses_from_details(self):
         logger.info("--- LOADING RESPONSES FROM DETAILS ---")
