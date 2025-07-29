@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=0,1
+export CUDA_VISIBLE_DEVICES=1
 export WANDB_API_KEY=2b60f655a687ad1161d31f0002256865e1ace428
 export WANDB_PROJECT=llm-reasoning
 export VLLM_WORKER_MULTIPROC_METHOD=spawn # Required for vLLM
@@ -11,14 +11,24 @@ mkdir -p $OUTPUT_DIR
 # AIME 2024
 TASK=aime24
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_nonthinking_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+
+# AIME 2025
+TASK=aime25
+lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
 # MATH
 TASK=math_500
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_nonthinking_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
-# GPQA Diamond
+# GSM8K
 TASK=gsm8k
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_nonthinking_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+
+# GPQA Diamond
+TASK=gpqa:diamond
+lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
