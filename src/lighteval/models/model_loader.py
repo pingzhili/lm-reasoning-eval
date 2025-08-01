@@ -171,10 +171,7 @@ def load_model_with_accelerate_or_default(
     elif isinstance(config, VLLMModelConfig):
         if not is_vllm_available():
             raise ImportError(NO_VLLM_ERROR_MSG)
-        if config.is_async:
-            raise NotImplementedError("Async VLLM has been removed. ")
-        else:
-            model = VLLMModel(config=config)
+        model = VLLMModel(config=config)
     elif isinstance(config, VLMTransformersModelConfig):
         model = VLMTransformersModel(config=config)
     else:
