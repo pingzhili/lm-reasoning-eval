@@ -390,7 +390,7 @@ class VLLMModel(LightevalModel):
                     inputs=[final_input],
                     max_new_tokens=max_new_tokens,
                     returns_logits=returns_logits,
-                    num_samples=num_samples,
+                    num_samples=1,
                 )[0]
 
                 # Construct full response
