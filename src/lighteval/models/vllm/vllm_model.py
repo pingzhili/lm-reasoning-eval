@@ -339,10 +339,10 @@ class VLLMModel(LightevalModel):
                 thinking_tokens = 0
                 thinking_steps = []
                 current_input = inputs[0]
-                context_tokens = inputs[0]
+                last_wait = False
 
                 # Generate thinking steps with "\n\n" as stop token
-                while thinking_tokens < thinking_budget:
+                while True:
                     # Generate one thinking step
                     vllm_output = self._generate(
                         inputs=[current_input],
@@ -355,6 +355,9 @@ class VLLMModel(LightevalModel):
                     num_step_tokens = len(vllm_output.outputs[0].token_ids)
                     thinking_tokens += num_step_tokens
 
+                    if last_wait:
+                        step_text = "Wait, " + step_text
+
                     # Check if we've hit the budget
                     if thinking_tokens >= thinking_budget:
                         # Complete current step and add closing tag
@@ -364,51 +367,24 @@ class VLLMModel(LightevalModel):
                         break
 
                     # Check if thinking naturally ended (e.g., model generated </think>)
+                    # Enforce to continue
                     if "</think>\n\n" in step_text:
-                        thinking_steps.append(step_text.split("</think>\n\n")[0] + "</think>\n\n")
-                        thinking_text = "\n\n".join(thinking_steps)
-                        break
+                        thinking_steps.append(step_text.split("</think>\n\n")[0])
+                        thinking_text = "\n\n".join(thinking_steps) + "\n\n"
+                        next_prompt = context + thinking_text + "Wait, "
+                        last_wait = True
+                    else:
+                        # Continue thinking
+                        thinking_steps.append(step_text)
+                        thinking_text = "\n\n".join(thinking_steps) + "\n\n"
+                        next_prompt = context + thinking_text
+                        last_wait = False
 
-                    # Continue thinking
-                    thinking_steps.append(step_text)
-                    thinking_text = "\n\n".join(thinking_steps) + "\n\n"
-
-                    # Prepare input for next step
-                    # accumulated_text = "\n\n".join(thinking_steps) + "\n\n"
-                    # messages = [
-                    #     {"role": "user", "content": doc.query},
-                    #     {"role": "assistant", "content": f"{accumulated_text}"},
-                    # ]
-                    # next_prompt = self.tokenizer.apply_chat_template(
-                    #     messages,
-                    #     tokenize=False,
-                    #     add_generation_prompt=False,
-                    #     # continue_final_message=True,
-                    #     # enable_thinking=True
-                    # )
-                    next_prompt = context + thinking_text
                     logger.info(f"Next prompt: {next_prompt}") # debug
                     current_input = self.tokenizer([next_prompt], add_special_tokens=False)["input_ids"][0]
 
-                # Generate the final answer
-                if not thinking_steps:
-                    # If no thinking was generated, fall back to regular generation
-                    thinking_text = ""
-                else:
-                    thinking_text = "\n\n".join(thinking_steps)
-                    assert "</think>" not in thinking_text, f"</think> should not be in '{thinking_text}'"
-
                 # Prepare final prompt with completed thinking
-                messages = [
-                    {"role": "user", "content": doc.query},
-                    {"role": "assistant", "content": f"<think>{thinking_text}</think>\n\n" if thinking_text else ""},
-                ]
-                final_prompt = self.tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=False,
-                    continue_final_message=True,
-                )
+                final_prompt = context + thinking_text
                 final_input = self.tokenizer([final_prompt], add_special_tokens=False)["input_ids"][0]
 
                 # Generate final answer without stop tokens
