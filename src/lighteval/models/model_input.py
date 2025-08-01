@@ -49,6 +49,7 @@ class GenerationParameters(BaseModel, extra="forbid"):
     response_format: str | None = None  # inference_providers
 
     returns_logits: bool | None = None  # vllm
+    thinking_budget: int = -1  # vllm, -1 means no budget constraint
 
     @classmethod
     def from_dict(cls, config_dict: dict):
@@ -152,6 +153,8 @@ class GenerationParameters(BaseModel, extra="forbid"):
         # VLLM max_tokens is 16 by default, however the pipeline expect the max_tokens to be None, if the user didn't specify it
         if not x.get("max_tokens"):
             x["max_tokens"] = None
+        # Don't pass thinking_budget to vllm as it's not a VLLM parameter
+        x.pop("thinking_budget", None)
         return x
 
     def to_vllm_openai_dict(self) -> dict:

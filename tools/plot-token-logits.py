@@ -88,7 +88,7 @@ def create_color_legend():
         <h4>Log Probability Scale</h4>
         <div style="display: flex; align-items: center; margin-bottom: 10px;">
             <span style="margin-right: 10px;">Low</span>
-            <div style="width: 300px; height: 20px; background: linear-gradient(to right, 
+            <div style="width: 300px; height: 20px; background: linear-gradient(to right,
                 rgb(255, 200, 200) 0%, rgb(139, 0, 0) 100%); border: 1px solid #ccc;"></div>
             <span style="margin-left: 10px;">High</span>
         </div>
@@ -134,7 +134,7 @@ def create_matplotlib_visualization(token_strings, normalized_logprobs, original
             pos[1],
             token,
             color="black",
-            bbox=dict(boxstyle="round,pad=0.3", facecolor=color, edgecolor="none"),
+            bbox={"boxstyle": "round,pad=0.3", "facecolor": color, "edgecolor": "none"},
             fontsize=10,
             family="monospace",
             verticalalignment="center",
@@ -180,7 +180,7 @@ def example_usage():
     display(HTML(html_viz))
 
     # Create matplotlib visualization
-    fig = visualize_token_logprobs(
+    visualize_token_logprobs(
         example_string, example_logprobs, tokenizer_name="Qwen/Qwen3-32B", method="matplotlib"
     )
     plt.show()
@@ -198,10 +198,10 @@ def visualize_with_token_info(tokens, logprob_list, tokenizer_name="Qwen/Qwen3-3
     html_parts = [
         """
     <style>
-        .token-viz { 
-            font-family: 'Courier New', monospace; 
-            font-size: 14px; 
-            line-height: 2.5; 
+        .token-viz {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 2.5;
             margin: 20px;
         }
         .token {

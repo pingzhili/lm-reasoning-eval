@@ -44,6 +44,9 @@ def vllm(
     cot_prompt: Annotated[
         Optional[str], Option(help="Use chain of thought prompt for evaluation.", rich_help_panel=HELP_PANEL_NAME_4)
     ] = None,
+    thinking_budget: Annotated[
+        int, Option(help="Token budget for thinking content. -1 means no budget.", rich_help_panel=HELP_PANEL_NAME_4)
+    ] = -1,
     num_repeats: Annotated[
         int, Option(help="Number of times to repeat evaluation for each sample.", rich_help_panel=HELP_PANEL_NAME_1)
     ] = 1,
@@ -138,6 +141,11 @@ def vllm(
         model_config = VLLMModelConfig.from_path(model_args)
     else:
         metric_options = {}
+        # Add thinking_budget to model_args if it's specified
+        if thinking_budget != -1:
+            if model_args and not model_args.endswith(","):
+                model_args += ","
+            model_args += f"generation_parameters={{thinking_budget:{thinking_budget}}}"
         model_config = VLLMModelConfig.from_args(model_args)
 
     pipeline = Pipeline(

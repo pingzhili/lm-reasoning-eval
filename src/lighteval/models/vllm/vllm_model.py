@@ -20,12 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import asyncio
 import gc
 import itertools
 import logging
 import os
-from typing import Coroutine, Optional
+from typing import Optional
 
 import torch
 from pydantic import NonNegativeFloat, NonNegativeInt, PositiveInt
@@ -52,7 +51,6 @@ if is_vllm_available():
         destroy_model_parallel,
     )
     from vllm.transformers_utils.tokenizer import get_tokenizer
-    from vllm.v1.engine.async_llm import AsyncEngineArgs, AsyncLLM
 
     logging.getLogger("vllm").propagate = True
     logging.getLogger("vllm").handlers.clear()
@@ -64,8 +62,7 @@ else:
 
     LLM = SamplingParams = get_tokenizer = ray = distribute = destroy_distributed_environment = (
         destroy_model_parallel
-    ) = Mock()
-    AsyncLLM = AsyncEngineArgs = RequestOutput = Mock()
+    ) = RequestOutput = Mock()
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -124,8 +121,6 @@ class VLLMModelConfig(ModelConfig):
             Subfolder within the model repository. Defaults to None.
         use_chat_template (bool):
             Whether to use chat templates for conversation-style prompts. Defaults to False.
-        is_async (bool):
-            Whether to use the async version of VLLM. Defaults to False.
         hf_overrides (dict):
             Overrides for HuggingFace model configuration. Defaults to empty dict.
 
@@ -168,7 +163,6 @@ class VLLMModelConfig(ModelConfig):
     max_num_batched_tokens: PositiveInt = 2048  # maximum number of tokens per batch
     subfolder: str | None = None
     use_chat_template: bool = False
-    is_async: bool = False  # Whether to use the async version or sync version of the model
 
     enable_thinking: bool = True  # if you can think, think
     self_judge_thinking: bool = False  # whether to let model self-judge if thinking is needed per question
@@ -304,6 +298,166 @@ class VLLMModel(LightevalModel):
         tokenizer.pad_token = tokenizer.eos_token
         return tokenizer
 
+    def _greedy_until_with_thinking_budget(
+        self,
+        docs: list[Doc],
+        thinking_budget: int,
+    ) -> list[ModelResponse]:
+        """
+        Generates responses with thinking budget constraint.
+
+        Args:
+            docs: list of documents to generate responses for
+            thinking_budget: maximum tokens allowed for thinking
+
+        Returns:
+            list of model responses
+        """
+        dataset = GenerativeTaskDataset(requests=docs, num_dataset_splits=self.DATASET_SPLITS)
+        results = []
+
+        for split in tqdm(
+            dataset.splits_iterator(),
+            total=dataset.num_dataset_splits,
+            desc="Splits",
+            position=0,
+            disable=False,
+        ):
+            for doc in split:
+                # Process each doc individually for thinking budget tracking
+                max_new_tokens = self._config.generation_parameters.max_new_tokens or doc.generation_size
+                returns_logits = self._config.generation_parameters.returns_logits
+                num_samples = doc.num_samples
+
+                # Prepare the initial prompt
+                context = self.prompt_manager.prepare_prompt(doc)
+                tokenized = self.tokenizer([context], add_special_tokens=self.add_special_tokens)
+                inputs = tokenized["input_ids"]
+
+                # Track thinking tokens and steps
+                thinking_tokens = 0
+                thinking_steps = []
+                current_input = inputs[0]
+
+                # Generate thinking steps with "\n\n" as stop token
+                while thinking_tokens < thinking_budget:
+                    # Calculate remaining budget
+                    remaining_budget = thinking_budget - thinking_tokens
+
+                    # Use a reasonable max for each step, but not exceeding remaining budget
+                    step_max_tokens = min(512, remaining_budget + 100)  # +100 to allow completing current step
+
+                    # Generate one thinking step
+                    vllm_output = self._generate(
+                        inputs=[current_input],
+                        max_new_tokens=step_max_tokens,
+                        stop_tokens=["\n\n"],
+                        returns_logits=returns_logits,
+                        num_samples=1,  # Force single sample for thinking phase
+                    )[0]
+
+                    step_text = vllm_output.outputs[0].text
+                    step_tokens = len(vllm_output.outputs[0].token_ids)
+                    thinking_tokens += step_tokens
+
+                    # Check if we've hit the budget
+                    if thinking_tokens >= thinking_budget:
+                        # Complete current step and add closing tag
+                        thinking_steps.append(step_text)
+                        thinking_text = "\n\n".join(thinking_steps)
+                        thinking_text += "\n</think>\n\n"
+                        break
+
+                    # Check if thinking naturally ended (e.g., model generated </think>)
+                    if "</think>" in step_text:
+                        thinking_steps.append(step_text)
+                        thinking_text = "\n\n".join(thinking_steps)
+                        break
+
+                    # Continue thinking
+                    thinking_steps.append(step_text)
+
+                    # Prepare input for next step
+                    accumulated_text = "\n\n".join(thinking_steps) + "\n\n"
+                    messages = [
+                        {"role": "user", "content": doc.query},
+                        {"role": "assistant", "content": f"<think>{accumulated_text}"},
+                    ]
+                    next_prompt = self.tokenizer.apply_chat_template(
+                        messages,
+                        tokenize=False,
+                        add_generation_prompt=False,
+                        enable_thinking=True,
+                    )
+                    current_input = self.tokenizer([next_prompt], add_special_tokens=False)["input_ids"][0]
+
+                # Generate the final answer
+                if not thinking_steps:
+                    # If no thinking was generated, fall back to regular generation
+                    thinking_text = ""
+                else:
+                    thinking_text = "\n\n".join(thinking_steps)
+                    if not thinking_text.endswith("</think>\n\n"):
+                        thinking_text += "\n</think>\n\n"
+
+                # Prepare final prompt with completed thinking
+                messages = [
+                    {"role": "user", "content": doc.query},
+                    {"role": "assistant", "content": f"<think>{thinking_text}" if thinking_text else ""},
+                ]
+                final_prompt = self.tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=False,
+                    enable_thinking=True,
+                )
+                final_input = self.tokenizer([final_prompt], add_special_tokens=False)["input_ids"][0]
+
+                # Generate final answer without stop tokens
+                final_output = self._generate(
+                    inputs=[final_input],
+                    max_new_tokens=max_new_tokens,
+                    stop_tokens=[],  # No stop tokens for final answer
+                    returns_logits=returns_logits,
+                    num_samples=num_samples,
+                )[0]
+
+                # Construct full response
+                full_text = thinking_text + final_output.outputs[0].text
+
+                # Collect all output tokens (from thinking + final answer)
+                for step in thinking_steps:
+                    # We don't have the exact tokens from thinking steps, so we'll use the final output tokens
+                    # In a more complete implementation, we'd store tokens from each thinking step
+                    pass
+
+                # Create response object
+                output_tokens = [final_output.outputs[i].token_ids for i in range(num_samples)]
+                output_logprobs = None
+                if returns_logits:
+                    output_logprobs = [
+                        [
+                            {
+                                str(idx): {"logprob": lp.logprob, "rank": lp.rank, "decoded_token": lp.decoded_token}
+                                for idx, lp in token_logprobs.items()
+                                if lp is not None and hasattr(lp, "logprob") and lp.logprob is not None
+                            }
+                            for token_logprobs in outputs.logprobs
+                        ]
+                        for outputs in final_output.outputs
+                    ]
+
+                cur_response = ModelResponse(
+                    input=context,
+                    text=[output.text for output in final_output.outputs] if num_samples > 1 else [full_text],
+                    output_tokens=output_tokens,
+                    input_tokens=inputs[0],
+                    logprobs=output_logprobs,
+                )
+                results.append(cur_response)
+
+        return dataset.get_original_order(results)
+
     def greedy_until(
         self,
         docs: list[Doc],
@@ -318,6 +472,11 @@ class VLLMModel(LightevalModel):
         Returns:
             list[GenerateReturn]: list of generated responses.
         """
+        # Check if we should use thinking budget
+        thinking_budget = self._config.generation_parameters.thinking_budget
+        if thinking_budget > 0 and self.prompt_manager.enable_thinking:
+            return self._greedy_until_with_thinking_budget(docs, thinking_budget)
+
         dataset = GenerativeTaskDataset(requests=docs, num_dataset_splits=self.DATASET_SPLITS)
         results = []
 
@@ -481,7 +640,12 @@ Does this question require very long, complex thinking? Answer with only 'YES' o
             self.prompt_manager.enable_thinking = needs_thinking
 
             # Generate the actual response
-            response = self.greedy_until([doc])[0]
+            # If thinking budget is set and thinking is needed, use the budget-aware method
+            thinking_budget = self._config.generation_parameters.thinking_budget
+            if thinking_budget > 0 and needs_thinking:
+                response = self._greedy_until_with_thinking_budget([doc], thinking_budget)[0]
+            else:
+                response = self.greedy_until([doc])[0]
 
             # Log the self-judging decision
             logger.info(f"Doc {doc.id}: Self-judged thinking = {needs_thinking}")
@@ -633,215 +797,3 @@ Does this question require very long, complex thinking? Answer with only 'YES' o
 
     def loglikelihood_rolling(self, docs: list[Doc]) -> list[ModelResponse]:
         raise NotImplementedError()
-
-
-class AsyncVLLMModel(VLLMModel):
-    """VLLM models which deploy async natively (no ray). Supports DP and PP/TP but not batch size > 1"""
-
-    DATASET_SPLITS = 1
-    is_async = True
-
-    def __init__(self, config: VLLMModelConfig):
-        super().__init__(config)
-        # Ensure self-judgments storage is initialized for async model too
-        self._self_judgments = {}
-
-    def cleanup(self):
-        gc.collect()
-        destroy_distributed_environment()
-        torch.cuda.empty_cache()
-
-    def _create_auto_model(self, config: VLLMModelConfig):
-        """
-        Creates an instance of the async vllm model loaded from HF. Requires using the v1 of VLLM.
-
-        Returns:
-            AsyncLLM: The created async VLLM instance
-        """
-        self.model_args = {
-            "model": config.model_name,
-            "gpu_memory_utilization": config.gpu_memory_utilization,
-            "revision": config.revision + (f"/{config.subfolder}" if config.subfolder is not None else ""),
-            "dtype": config.dtype,
-            "trust_remote_code": config.trust_remote_code,
-            "tensor_parallel_size": config.tensor_parallel_size,
-            "data_parallel_size": config.data_parallel_size,
-            "pipeline_parallel_size": config.pipeline_parallel_size,
-            "max_model_len": self._max_length,
-            "swap_space": 4,
-            "seed": int(config.seed),
-            "max_num_seqs": int(config.max_num_seqs),
-            "max_num_batched_tokens": int(config.max_num_batched_tokens),
-            "enforce_eager": True,
-        }
-
-        if config.data_parallel_size > 1:
-            self._batch_size = "auto"
-
-        model = AsyncLLM.from_engine_args(AsyncEngineArgs(**self.model_args))
-
-        # If the max_length can't get extracted from the config, it will be inferred from the model
-        if self._max_length is None:
-            self._max_length = model.model_config.max_seq_len_to_capture
-
-        return model
-
-    async def _async_one_item(
-        self,
-        index: int,
-        doc: Doc,
-        generative: bool,
-    ) -> Coroutine[None, list, str]:
-        """Contains the actual logic of the generation."""
-        sampling_params = SamplingParams(**self._config.generation_parameters.to_vllm_dict())
-
-        if not generative:
-            sampling_params.temperature = 0
-            sampling_params.prompt_logprobs = 1
-            sampling_params.max_tokens = 1
-            sampling_params.detokenize = False
-            prompt = self.prompt_manager.prepare_prompt(doc) + doc.choice
-            index_str = f"logprob_{index}"
-        else:
-            sampling_params.n = doc.num_samples
-            if sampling_params.n > 1:
-                # Todo clementine: investigate more
-                logger.warning(
-                    "Careful, there can be unexpected behavior when using sampling evals with the async vllm model"
-                )
-            sampling_params.max_tokens = self._config.generation_parameters.max_new_tokens or doc.generation_size
-            sampling_params.stop = [] if self.use_chat_template else doc.stop_sequences
-            sampling_params.logprobs = int(doc.use_logits)
-            prompt = self.prompt_manager.prepare_prompt(doc)
-            index_str = f"generative_{index}"
-
-        generator = self.model.generate(request_id=index_str, prompt=prompt, sampling_params=sampling_params)
-        try:
-            while output := await anext(generator):
-                continue
-        except StopAsyncIteration:
-            pass
-
-        return output
-
-    async def _async_batch(self, docs: list[Doc], generative: bool) -> list:
-        processed_requests = [
-            self._async_one_item(index=index, doc=doc, generative=generative) for index, doc in enumerate(docs)
-        ]
-        results = await asyncio.gather(*processed_requests)
-        return results
-
-    async def greedy_until(
-        self,
-        docs: list[Doc],
-    ) -> list[ModelResponse]:
-        """
-        Generates responses using a greedy decoding strategy until certain ending conditions are met.
-
-        Args:
-            requests (list[Request]): list of requests containing the context and ending conditions.
-
-        Returns:
-            list[GenerateReturn]: list of generated responses.
-        """
-        results = []
-
-        responses = await self._async_batch(docs=docs, generative=True)
-
-        for response in responses:
-            output_token_ids = [outputs.token_ids for outputs in response.outputs]
-            full_logprobs = [output.logprobs for output in response.outputs] or []
-            logprobs = [logprob[token_id].logprob for token_id, logprob in zip(output_token_ids[0], full_logprobs[0])]
-            result = [output.text for output in response.outputs]
-            input_token_ids = response.prompt_token_ids
-
-            cur_response = ModelResponse(
-                text=result,
-                logprobs=logprobs,
-                output_tokens=list(output_token_ids),
-                input_tokens=input_token_ids,
-            )
-            results.append(cur_response)
-
-        return results
-
-    async def greedy_until_self_judge(
-        self,
-        docs: list[Doc],
-    ) -> list[ModelResponse]:
-        """
-        Async version of two-step generation process:
-        1. Ask model if thinking is needed for each question
-        2. Generate answer with or without thinking based on judgment
-        """
-        if not self._config.self_judge_thinking:
-            # If self-judging is disabled, use the regular greedy_until
-            return await self.greedy_until(docs)
-
-        # Step 1: Create judgment requests
-        judge_docs = [self._create_judge_doc(doc) for doc in docs]
-
-        # Generate judgments
-        judge_responses = await self.greedy_until(judge_docs)
-
-        # Step 2: Prepare for actual generation with dynamic thinking
-        # We need to temporarily modify the prompt manager's enable_thinking for each request
-        results = []
-
-        # Process each doc individually based on its judgment
-        for doc, judge_response in zip(docs, judge_responses):
-            needs_thinking = self._parse_thinking_judgment(judge_response.text)
-
-            # Temporarily set enable_thinking based on judgment
-            original_enable_thinking = self.prompt_manager.enable_thinking
-            self.prompt_manager.enable_thinking = needs_thinking
-
-            # Generate the actual response
-            response = await self.greedy_until([doc])
-
-            # Log the self-judging decision
-            logger.info(f"Doc {doc.id}: Self-judged thinking = {needs_thinking}")
-
-            # Store the judgment for later use in metrics
-            self._self_judgments[doc.id] = needs_thinking
-
-            results.append(response[0])
-
-            # Restore original enable_thinking
-            self.prompt_manager.enable_thinking = original_enable_thinking
-
-        return results
-
-    async def loglikelihood(
-        self,
-        docs: list[Doc],
-    ) -> list[ModelResponse]:
-        """
-        Generates responses using a greedy decoding strategy until certain ending conditions are met and
-        stores the logprobs.
-
-        Args:
-            requests (list[Request]): list of requests containing the context and ending conditions.
-
-        Returns:
-            list[LoglikelihoodResponse]: list of generated responses.
-        """
-        results = []
-
-        responses = await self._async_batch(docs=docs, generative=False)
-
-        for response, input in zip(responses, docs):
-            continuation_logprobs = []
-            for token, logprobs in zip(input.tokenized_continuation[::-1], response.prompt_logprobs[::-1]):
-                continuation_logprobs.append(logprobs[token])
-            bool_score = all(logprob.rank == 1 for logprob in continuation_logprobs)
-            continuation_logprobs = [logprob.logprob for logprob in continuation_logprobs]
-            answer = ModelResponse(
-                input_tokens=input.tokenized_context + input.tokenized_continuation,
-                output_tokens=input.tokenized_continuation,
-                logprobs=sum(continuation_logprobs),
-                argmax_logits_eq_gold=bool_score,
-            )
-            results.append(answer)
-
-        return results
