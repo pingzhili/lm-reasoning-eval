@@ -31,6 +31,7 @@ import yaml
 from huggingface_hub import HfApi
 from pydantic import BaseModel
 from transformers.models.auto.configuration_auto import AutoConfig
+from loguru import logger
 
 from lighteval.models.model_input import GenerationParameters
 
@@ -123,6 +124,7 @@ class ModelConfig(BaseModel, extra="forbid"):
             {
                 'model': {'model_name': 'gpt2', 'use_cache': True, 'generation_parameters': {'temperature': 0.7}},
             }
+            >>> parse_args("model_name=gpt2,use_cache,generation_parameters={temperature:0.7},hf_overrides={num_experts_per_tok:6}")
         """
         # Looking for generation_parameters and other dict-like parameters
         generation_parameters_dict = None
@@ -165,6 +167,8 @@ class ModelConfig(BaseModel, extra="forbid"):
         if hf_overrides_dict is not None:
             model_config["hf_overrides"] = hf_overrides_dict
 
+        logger.info(f"Input args: {args}")
+        logger.info(f"Parsed args: {model_config}")
         return model_config
 
 
