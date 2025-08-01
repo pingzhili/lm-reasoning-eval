@@ -341,16 +341,9 @@ class VLLMModel(LightevalModel):
 
                 # Generate thinking steps with "\n\n" as stop token
                 while thinking_tokens < thinking_budget:
-                    # Calculate remaining budget
-                    remaining_budget = thinking_budget - thinking_tokens
-
-                    # Use a reasonable max for each step, but not exceeding remaining budget
-                    step_max_tokens = min(512, remaining_budget + 100)  # +100 to allow completing current step
-
                     # Generate one thinking step
                     vllm_output = self._generate(
                         inputs=[current_input],
-                        max_new_tokens=step_max_tokens,
                         stop_tokens=["\n\n"],
                         returns_logits=returns_logits,
                         num_samples=1,  # Force single sample for thinking phase
@@ -370,7 +363,7 @@ class VLLMModel(LightevalModel):
 
                     # Check if thinking naturally ended (e.g., model generated </think>)
                     if "</think>" in step_text:
-                        thinking_steps.append(step_text)
+                        thinking_steps.append(step_text.split("</think>")[0])
                         thinking_text = "\n\n".join(thinking_steps)
                         break
 
@@ -397,19 +390,17 @@ class VLLMModel(LightevalModel):
                     thinking_text = ""
                 else:
                     thinking_text = "\n\n".join(thinking_steps)
-                    if not thinking_text.endswith("</think>\n\n"):
-                        thinking_text += "\n</think>\n\n"
+                    assert "</think>" not in thinking_text, f"</think> should not be in '{thinking_text}'"
 
                 # Prepare final prompt with completed thinking
                 messages = [
                     {"role": "user", "content": doc.query},
-                    {"role": "assistant", "content": f"<think>{thinking_text}" if thinking_text else ""},
+                    {"role": "assistant", "content": f"<think>{thinking_text}</think>\n\n" if thinking_text else ""},
                 ]
                 final_prompt = self.tokenizer.apply_chat_template(
                     messages,
                     tokenize=False,
                     add_generation_prompt=False,
-                    enable_thinking=True,
                 )
                 final_input = self.tokenizer([final_prompt], add_special_tokens=False)["input_ids"][0]
 
@@ -417,7 +408,6 @@ class VLLMModel(LightevalModel):
                 final_output = self._generate(
                     inputs=[final_input],
                     max_new_tokens=max_new_tokens,
-                    stop_tokens=[],  # No stop tokens for final answer
                     returns_logits=returns_logits,
                     num_samples=num_samples,
                 )[0]
