@@ -15,4 +15,4 @@ mkdir -p $OUTPUT_DIR
 TASK=aime24
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
     --thinking-budget $THINKING_BUDGET \
-    --output-dir $OUTPUT_DIR --save-details --max_samples 4 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+    --output-dir $OUTPUT_DIR --save-details --max-samples 4 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
