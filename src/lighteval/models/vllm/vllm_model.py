@@ -380,10 +380,10 @@ class VLLMModel(LightevalModel):
                         messages,
                         tokenize=False,
                         add_generation_prompt=False,
-                        enable_thinking=True,
+                        continue_final_message=True,
                     )
+                    logger.info(f"Next prompt: {next_prompt}")
                     current_input = self.tokenizer([next_prompt], add_special_tokens=False)["input_ids"][0]
-                    logger.info(f"Current input: {current_input}") # debug
 
                 # Generate the final answer
                 if not thinking_steps:
@@ -402,9 +402,9 @@ class VLLMModel(LightevalModel):
                     messages,
                     tokenize=False,
                     add_generation_prompt=False,
+                    continue_final_message=True,
                 )
                 final_input = self.tokenizer([final_prompt], add_special_tokens=False)["input_ids"][0]
-                logger.info(f"Final input: {final_input}")  # debug
 
                 # Generate final answer without stop tokens
                 final_output = self._generate(
@@ -447,7 +447,6 @@ class VLLMModel(LightevalModel):
                     input_tokens=inputs[0],
                     logprobs=output_logprobs,
                 )
-                logger.info("Response: ", cur_response)
                 results.append(cur_response)
 
         return dataset.get_original_order(results)
