@@ -475,6 +475,7 @@ class VLLMModel(LightevalModel):
         # Check if we should use thinking budget
         thinking_budget = self._config.generation_parameters.thinking_budget
         if thinking_budget > 0 and self.prompt_manager.enable_thinking:
+            logger.info(f"Using thinking budget of {thinking_budget}.")
             return self._greedy_until_with_thinking_budget(docs, thinking_budget)
 
         dataset = GenerativeTaskDataset(requests=docs, num_dataset_splits=self.DATASET_SPLITS)
