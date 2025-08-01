@@ -331,6 +331,7 @@ class VLLMModel(LightevalModel):
 
                 # Prepare the initial prompt
                 context = self.prompt_manager.prepare_prompt(doc)
+                logger.info(f"First input: {context}")  # debug
                 tokenized = self.tokenizer([context], add_special_tokens=self.add_special_tokens)
                 inputs = tokenized["input_ids"]
 
@@ -338,7 +339,6 @@ class VLLMModel(LightevalModel):
                 thinking_tokens = 0
                 thinking_steps = []
                 current_input = inputs[0]
-                logger.info(f"First input: {current_input}") # debug
 
                 # Generate thinking steps with "\n\n" as stop token
                 while thinking_tokens < thinking_budget:
