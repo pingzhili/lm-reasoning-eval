@@ -338,6 +338,7 @@ class VLLMModel(LightevalModel):
                 thinking_tokens = 0
                 thinking_steps = []
                 current_input = inputs[0]
+                logger.info(f"First input: {current_input}") # debug
 
                 # Generate thinking steps with "\n\n" as stop token
                 while thinking_tokens < thinking_budget:
@@ -381,8 +382,9 @@ class VLLMModel(LightevalModel):
                         tokenize=False,
                         add_generation_prompt=False,
                         continue_final_message=True,
+                        enable_thinking=True
                     )
-                    logger.info(f"Next prompt: {next_prompt}")
+                    logger.info(f"Next prompt: {next_prompt}") # debug
                     current_input = self.tokenizer([next_prompt], add_special_tokens=False)["input_ids"][0]
 
                 # Generate the final answer
