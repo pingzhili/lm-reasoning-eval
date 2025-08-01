@@ -331,7 +331,6 @@ class VLLMModel(LightevalModel):
 
                 # Prepare the initial prompt
                 context = self.prompt_manager.prepare_prompt(doc)
-                logger.info(f"First input: {context}")  # debug
                 tokenized = self.tokenizer([context], add_special_tokens=self.add_special_tokens)
                 inputs = tokenized["input_ids"]
 
@@ -380,7 +379,6 @@ class VLLMModel(LightevalModel):
                         next_prompt = context + thinking_text
                         last_wait = False
 
-                    logger.info(f"Next prompt: {next_prompt}") # debug
                     current_input = self.tokenizer([next_prompt], add_special_tokens=False)["input_ids"][0]
 
                 # Prepare final prompt with completed thinking
@@ -397,7 +395,6 @@ class VLLMModel(LightevalModel):
 
                 # Construct full response
                 full_text = thinking_text + final_output.outputs[0].text
-                logger.info(f"Full text: {full_text}") # debug
 
                 # Collect all output tokens (from thinking + final answer)
                 for step in thinking_steps:
