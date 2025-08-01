@@ -454,7 +454,7 @@ class VLLMModel(LightevalModel):
                     input_tokens=inputs[0],
                     logprobs=output_logprobs,
                 )
-                logger.debug(cur_response)
+                logger.info("Response: ", cur_response)
                 results.append(cur_response)
 
         return dataset.get_original_order(results)
