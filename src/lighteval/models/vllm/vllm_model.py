@@ -323,7 +323,7 @@ class VLLMModel(LightevalModel):
             position=0,
             disable=False,
         ):
-            for doc in split:
+            for doc in tqdm(split, desc="Generating responses"):
                 # Process each doc individually for thinking budget tracking
                 max_new_tokens = self._config.generation_parameters.max_new_tokens or doc.generation_size
                 returns_logits = self._config.generation_parameters.returns_logits
@@ -348,6 +348,7 @@ class VLLMModel(LightevalModel):
                         stop_tokens=["\n\n"],
                         returns_logits=returns_logits,
                         num_samples=1,  # Force single sample for thinking phase
+                        use_tqdm=False
                     )[0]
 
                     step_text = vllm_output.outputs[0].text
@@ -391,6 +392,7 @@ class VLLMModel(LightevalModel):
                     max_new_tokens=max_new_tokens,
                     returns_logits=returns_logits,
                     num_samples=1,
+                    use_tqdm=False,
                 )[0]
 
                 # Construct full response
@@ -640,6 +642,7 @@ Does this question require very long, complex thinking? Answer with only 'YES' o
         returns_logits: Optional[bool] = False,
         num_samples: int = 1,
         generate: bool = True,
+        use_tqdm: bool = True,
     ) -> list:
         """Contains the actual logic of the generation."""
         # remove "returns_logits" from arg dict to SamplingParams
@@ -695,7 +698,7 @@ Does this question require very long, complex thinking? Answer with only 'YES' o
             outputs = self.model.generate(
                 prompt_token_ids=inputs,
                 sampling_params=sampling_params,
-                use_tqdm=True,
+                use_tqdm=use_tqdm,
             )
 
         return outputs
