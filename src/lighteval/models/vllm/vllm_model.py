@@ -328,6 +328,7 @@ class VLLMModel(LightevalModel):
                 max_new_tokens = self._config.generation_parameters.max_new_tokens or doc.generation_size
                 returns_logits = self._config.generation_parameters.returns_logits
                 num_samples = doc.num_samples
+                assert num_samples == 1, f"Found num_samples = {num_samples}"
 
                 # Prepare the initial prompt
                 context = self.prompt_manager.prepare_prompt(doc)
@@ -405,20 +406,10 @@ class VLLMModel(LightevalModel):
                     pass
 
                 # Create response object
-                output_tokens = [final_output.outputs[i].token_ids for i in range(num_samples)]
+                output_tokens = None
                 output_logprobs = None
                 if returns_logits:
-                    output_logprobs = [
-                        [
-                            {
-                                str(idx): {"logprob": lp.logprob, "rank": lp.rank, "decoded_token": lp.decoded_token}
-                                for idx, lp in token_logprobs.items()
-                                if lp is not None and hasattr(lp, "logprob") and lp.logprob is not None
-                            }
-                            for token_logprobs in outputs.logprobs
-                        ]
-                        for outputs in final_output.outputs
-                    ]
+                    raise NotImplementedError("returns_logits not implemented for budget thinking")
 
                 cur_response = ModelResponse(
                     input=context,
