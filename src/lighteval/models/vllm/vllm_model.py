@@ -328,7 +328,7 @@ class VLLMModel(LightevalModel):
                 max_new_tokens = self._config.generation_parameters.max_new_tokens or doc.generation_size
                 returns_logits = self._config.generation_parameters.returns_logits
                 num_samples = doc.num_samples
-                assert num_samples == 1, f"Found num_samples = {num_samples}"
+                assert num_samples == 1, f"Found num_samples = {num_samples} for {doc}"
 
                 # Prepare the initial prompt
                 context = self.prompt_manager.prepare_prompt(doc)
