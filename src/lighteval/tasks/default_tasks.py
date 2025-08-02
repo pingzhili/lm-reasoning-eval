@@ -9825,7 +9825,7 @@ math_500 = LightevalTaskConfig(
     generation_size=32768,
     metrics=[
         Metrics.math_pass_at_1_1n,
-        Metrics.math_pass_at_1_4n,
+        # Metrics.math_pass_at_1_4n,
     ],
     version=2,
 )
