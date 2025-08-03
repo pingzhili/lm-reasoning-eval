@@ -338,6 +338,7 @@ class VLLMModel(LightevalModel):
                 # Track thinking tokens and steps
                 thinking_tokens = 0
                 thinking_steps = []
+                historical_step_tokens = []
                 current_input = inputs[0]
                 last_wait = False
 
@@ -354,6 +355,7 @@ class VLLMModel(LightevalModel):
 
                     step_text = vllm_output.outputs[0].text
                     num_step_tokens = len(vllm_output.outputs[0].token_ids)
+                    historical_step_tokens.append(num_step_tokens)
                     thinking_tokens += num_step_tokens
 
                     if last_wait:
@@ -382,6 +384,8 @@ class VLLMModel(LightevalModel):
                         last_wait = False
 
                     current_input = self.tokenizer([next_prompt], add_special_tokens=False)["input_ids"][0]
+
+                logger.info(f"Stop thinking with historical step tokens (budget={thinking_budget}): {historical_step_tokens}")
 
                 # Prepare final prompt with completed thinking
                 final_prompt = context + thinking_text
