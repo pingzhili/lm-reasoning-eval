@@ -344,6 +344,7 @@ class VLLMModel(LightevalModel):
                 current_input = inputs[0]
                 last_wait = False
                 num_repeat_steps = 0
+                next_prompt = None
 
                 # Generate thinking steps with "\n\n" as stop token
                 while True:
@@ -366,7 +367,7 @@ class VLLMModel(LightevalModel):
 
                     if len(thinking_steps) > 1 and thinking_steps[-1] == step_text:
                         logger.warning(f"Detected repeated thinking step: {step_text}"
-                                       f" - Current prompt: {current_input}")
+                                       f" - Current prompt: {next_prompt}")
                         num_repeat_steps += 1
                     else:
                         num_repeat_steps = 0
