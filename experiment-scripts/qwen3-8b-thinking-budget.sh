@@ -21,7 +21,7 @@ mkdir -p $OUTPUT_DIR
 #lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
 #    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
- MATH
+# MATH
 TASK=math_500
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
     --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
