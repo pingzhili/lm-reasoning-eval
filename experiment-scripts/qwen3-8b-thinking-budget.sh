@@ -26,12 +26,12 @@ mkdir -p $OUTPUT_DIR
 #lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
 #    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
-## GSM8K
-#TASK=gsm8k
-#lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-#    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
-
-# GPQA Diamond
-TASK=gpqa:diamond
+# GSM8K
+TASK=gsm8k
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
     --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+
+## GPQA Diamond
+#TASK=gpqa:diamond
+#lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+#    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"

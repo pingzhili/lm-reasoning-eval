@@ -346,6 +346,23 @@ class VLLMModel(LightevalModel):
                 num_repeat_steps = 0
                 next_prompt = None
 
+                # first run go ahead
+                if thinking_budget > 512:
+                    vllm_output = self._generate(
+                            inputs=[current_input],
+                            stop_tokens=["</think>"],
+                            returns_logits=returns_logits,
+                            num_samples=1,
+                            use_tqdm=False,
+                            max_new_tokens=thinking_budget - 512
+                        )[0]
+                    thinking_steps = vllm_output.outputs[0].text.split("\n\n")
+                    thinking_tokens = len(vllm_output.outputs[0].token_ids)
+                    historical_step_tokens.append(thinking_tokens)
+
+                    next_prompt = context + vllm_output.outputs[0].text
+                    current_input = self.tokenizer([next_prompt], add_special_tokens=False)["input_ids"][0]
+
                 # Generate thinking steps with "\n\n" as stop token
                 while True:
                     # Generate one thinking step
@@ -353,7 +370,7 @@ class VLLMModel(LightevalModel):
                         inputs=[current_input],
                         stop_tokens=["\n\n"],
                         returns_logits=returns_logits,
-                        num_samples=1,  # Force single sample for thinking phase
+                        num_samples=1,
                         use_tqdm=False
                     )[0]
 
