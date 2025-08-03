@@ -385,7 +385,7 @@ class VLLMModel(LightevalModel):
 
                     current_input = self.tokenizer([next_prompt], add_special_tokens=False)["input_ids"][0]
 
-                logger.info(f"Stop thinking with historical step tokens (budget={thinking_budget}): {historical_step_tokens}")
+                logger.info(f"Stop thinking with historical step tokens (used/budget={thinking_tokens}/{thinking_budget}): {historical_step_tokens}")
 
                 # Prepare final prompt with completed thinking
                 final_prompt = context + thinking_text
