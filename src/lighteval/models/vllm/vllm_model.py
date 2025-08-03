@@ -382,6 +382,9 @@ class VLLMModel(LightevalModel):
                         next_prompt = context + thinking_text
                         last_wait = False
 
+                    if len(thinking_steps) > 1 and thinking_steps[-2] == thinking_steps[-1]:
+                        logger.warning(f"Detected repeated thinking step: {thinking_steps[-1]}")
+
                     current_input = self.tokenizer([next_prompt], add_special_tokens=False)["input_ids"][0]
 
                 logger.info(f"Stop thinking with historical step tokens (used/budget={thinking_tokens}/{thinking_budget}): {historical_step_tokens}")
