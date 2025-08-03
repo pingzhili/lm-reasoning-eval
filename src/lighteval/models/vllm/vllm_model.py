@@ -302,6 +302,7 @@ class VLLMModel(LightevalModel):
         self,
         docs: list[Doc],
         thinking_budget: int,
+        max_repeat_steps: int=5
     ) -> list[ModelResponse]:
         """
         Generates responses with thinking budget constraint.
@@ -309,6 +310,7 @@ class VLLMModel(LightevalModel):
         Args:
             docs: list of documents to generate responses for
             thinking_budget: maximum tokens allowed for thinking
+            max_repeat_steps: maximum number of repeat steps before stopping thinking
 
         Returns:
             list of model responses
@@ -341,6 +343,7 @@ class VLLMModel(LightevalModel):
                 historical_step_tokens = []
                 current_input = inputs[0]
                 last_wait = False
+                num_repeat_steps = 0
 
                 # Generate thinking steps with "\n\n" as stop token
                 while True:
@@ -361,8 +364,18 @@ class VLLMModel(LightevalModel):
                     if last_wait:
                         step_text = "Wait, " + step_text
 
+                    if len(thinking_steps) > 1 and thinking_steps[-1] == step_text:
+                        logger.warning(f"Detected repeated thinking step: {step_text}"
+                                       f" - Current prompt: {current_input}")
+                        num_repeat_steps += 1
+                    else:
+                        num_repeat_steps = 0
+
+                    if num_repeat_steps >= max_repeat_steps:
+                        logger.warning(f"STOP thinking due to {num_repeat_steps} repeat steps of {step_text}.")
+
                     # Check if we've hit the budget
-                    if thinking_tokens >= thinking_budget:
+                    if thinking_tokens >= thinking_budget or num_repeat_steps >= max_repeat_steps:
                         # Cut current step and add closing tag
                         thinking_text = "\n\n".join(thinking_steps)
                         thinking_text += "\n</think>\n\n"
@@ -382,9 +395,6 @@ class VLLMModel(LightevalModel):
                         next_prompt = context + thinking_text
                         last_wait = False
 
-                    if len(thinking_steps) > 1 and thinking_steps[-2] == thinking_steps[-1]:
-                        logger.warning(f"Detected repeated thinking step: {thinking_steps[-1]}"
-                                       f" - Next prompt: {next_prompt}")
 
                     current_input = self.tokenizer([next_prompt], add_special_tokens=False)["input_ids"][0]
 
