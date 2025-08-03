@@ -363,8 +363,7 @@ class VLLMModel(LightevalModel):
 
                     # Check if we've hit the budget
                     if thinking_tokens >= thinking_budget:
-                        # Complete current step and add closing tag
-                        thinking_steps.append(step_text)
+                        # Cut current step and add closing tag
                         thinking_text = "\n\n".join(thinking_steps)
                         thinking_text += "\n</think>\n\n"
                         break
