@@ -369,8 +369,8 @@ class VLLMModel(LightevalModel):
 
                     # Check if thinking naturally ended (e.g., model generated </think>)
                     # Enforce to continue
-                    if "</think>\n\n" in step_text:
-                        thinking_steps.append(step_text.split("</think>\n\n")[0])
+                    if "</think>" in step_text:
+                        thinking_steps.append(step_text.split("</think>")[0])
                         thinking_text = "\n\n".join(thinking_steps) + "\n\n"
                         next_prompt = context + thinking_text + "Wait, "
                         last_wait = True
