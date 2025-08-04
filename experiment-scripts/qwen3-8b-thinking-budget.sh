@@ -15,11 +15,11 @@ mkdir -p $OUTPUT_DIR
 #TASK=aime24
 #lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
 #    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
-#
-## AIME 2025
-#TASK=aime25
-#lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-#    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+
+# AIME 2025
+TASK=aime25
+lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
 ## MATH
 #TASK=math_500
@@ -31,7 +31,7 @@ mkdir -p $OUTPUT_DIR
 #lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
 #    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
-# GPQA Diamond
-TASK=gpqa:diamond
-lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+## GPQA Diamond
+#TASK=gpqa:diamond
+#lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+#    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
