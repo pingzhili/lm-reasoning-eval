@@ -181,7 +181,6 @@ class LiteLLMClient(LightevalModel):
                 if "o1" in self.model:
                     logger.warning("O1 models do not support temperature, top_p, stop sequence. Disabling.")
                 else:
-                    kwargs.update(self.generation_parameters.to_litellm_dict())
                     logger.info(f"Generation kwargs: {kwargs}")
 
                 if kwargs.get("max_completion_tokens", None) is None:
@@ -295,10 +294,12 @@ class LiteLLMClient(LightevalModel):
 
             for response, context in zip(responses, contexts):
                 result: list[str] = [choice.message.content for choice in response.choices]
+                reasoning_result: list[str] = [choice.message.reasoning_content for choice in response.choices]
 
                 cur_response = ModelResponse(
                     # In empty responses, the model should return an empty string instead of None
                     text=result if result[0] else [""],
+                    reasoning_text=reasoning_result if reasoning_result[0] else [""],
                     input=context,
                 )
                 results.append(cur_response)
