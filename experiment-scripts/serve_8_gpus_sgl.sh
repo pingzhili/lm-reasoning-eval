@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Start python3 -m sglang.launch_server --model on 8 GPUs with ports 8000-8007
-MODEL_NAME="openai/gpt-o1-oss-120b"
+MODEL_NAME="openai/gpt-oss-120b"
 
 echo "Starting python3 -m sglang.launch_server --model on 8 GPUs..."
 

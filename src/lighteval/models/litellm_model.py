@@ -187,7 +187,9 @@ class LiteLLMClient(LightevalModel):
                 if kwargs.get("max_completion_tokens", None) is None:
                     kwargs["max_completion_tokens"] = max_new_tokens
 
-                kwargs["allowed_openai_params"] = ["reasoning_effort"]
+                if "reasoning_effort" in kwargs:
+                    kwargs["extra_body"] = {"reasoning_effort": kwargs["reasoning_effort"]}
+                    del kwargs["reasoning_effort"]
 
                 response = litellm.completion(**kwargs)
 
