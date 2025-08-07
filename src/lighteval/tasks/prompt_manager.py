@@ -47,6 +47,7 @@ class PromptManager:
         system_prompt: str | None = None,
         enable_thinking: bool = True,
         chat_template: str | None = None,
+        reasoning_effort: str | None = None,
     ):
         self.use_chat_template = use_chat_template
         self.tokenizer = tokenizer
@@ -56,6 +57,9 @@ class PromptManager:
         self.system_prompt = system_prompt  # System prompt to be used in chat templates
         self.enable_thinking = enable_thinking
         logger.info(f"Setting enable_thinking to {enable_thinking}")
+        self.reasoning_effort = reasoning_effort
+        if reasoning_effort is not None:
+            logger.info(f"Setting reasoning_effort to {reasoning_effort}")
 
     def prepare_prompt(self, doc: Doc) -> str:
         """Prepare a prompt from a document, either using chat template or plain text format."""
@@ -137,6 +141,7 @@ class PromptManager:
                 tokenize=False,
                 add_generation_prompt=True,
                 enable_thinking=self.enable_thinking,
+                reasoning_effort=self.reasoning_effort
             )
 
         else:  # for apis
