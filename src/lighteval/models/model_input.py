@@ -50,6 +50,7 @@ class GenerationParameters(BaseModel, extra="forbid"):
 
     returns_logits: bool | None = None  # vllm
     thinking_budget: int = -1  # vllm, -1 means no budget constraint
+    reasoning_effort: str | None = None # low, medium, high
 
     @classmethod
     def from_dict(cls, config_dict: dict):
@@ -231,4 +232,6 @@ class GenerationParameters(BaseModel, extra="forbid"):
             "repetition_penalty": self.repetition_penalty,
             "min_new_tokens": self.min_new_tokens,
         }
+        if self.reasoning_effort is not None:
+            args["reasoning_effort"] = self.reasoning_effort
         return {k: v for k, v in args.items() if v is not None}
