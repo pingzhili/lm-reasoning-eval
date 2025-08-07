@@ -1,7 +1,7 @@
 export WANDB_API_KEY=2b60f655a687ad1161d31f0002256865e1ace428
 export WANDB_PROJECT=llm-reasoning
 
-THINKING_EFFORT=${1-"low"}
+THINKING_EFFORT=${1-'low'}
 NUM_GPUS=$(python -c "import torch; print(torch.cuda.device_count())")
 MODEL=openai/gpt-oss-120b
 MODEL_ARGS="model_name=$MODEL,generation_parameters={max_new_tokens:32768,temperature:1.0,top_p:1.0,returns_logits:false,thinking_effort:$THINKING_EFFORT},use_chat_template=true,tensor_parallel_size=$NUM_GPUS"
