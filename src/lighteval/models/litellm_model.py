@@ -181,6 +181,7 @@ class LiteLLMClient(LightevalModel):
                 if "o1" in self.model:
                     logger.warning("O1 models do not support temperature, top_p, stop sequence. Disabling.")
                 else:
+                    kwargs.update(self.generation_parameters.to_litellm_dict())
                     logger.info(f"Generation kwargs: {kwargs}")
 
                 if kwargs.get("max_completion_tokens", None) is None:
