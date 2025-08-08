@@ -6,6 +6,7 @@ torch
 transformers
 python_dateutil
 flash-attn==2.5.8
+loguru
 
 # math_eval
 sympy==1.12
