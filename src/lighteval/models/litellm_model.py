@@ -208,6 +208,8 @@ class LiteLLMClient(LightevalModel):
             progress_text = progress_text + iter_output.choices[0].text
             finish_reason = iter_output.choices[0].finish_reason
 
+            logger.info("Progress Text >>> ", progress_text)
+
         # reach thinking budget
         progress_text = "\n\n".join(progress_text.split("\n\n")[:-1])
         thinking_text = progress_text.split("<|channel|>analysis<|message|>")[-1]

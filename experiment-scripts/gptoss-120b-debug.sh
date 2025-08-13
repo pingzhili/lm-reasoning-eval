@@ -1,7 +1,7 @@
 export WANDB_API_KEY=2b60f655a687ad1161d31f0002256865e1ace428
 export WANDB_PROJECT=llm-reasoning
 
-THINKING_EFFORT=${1-high}
+THINKING_EFFORT=${1-low}
 PORT=${2-8000}
 BASE_URL=http://localhost:$PORT/v1
 NUM_GPUS=$(python -c "import torch; print(torch.cuda.device_count())")
