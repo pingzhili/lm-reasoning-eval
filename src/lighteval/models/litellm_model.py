@@ -174,6 +174,7 @@ class LiteLLMClient(LightevalModel):
             top_p=kwargs["top_p"],
             api_key="nan",
             base_url=self.base_url,
+            extra_body={"skip_special_tokens": False},
         )
 
         finish_reason = first_output.choices[0].finish_reason
@@ -204,6 +205,7 @@ class LiteLLMClient(LightevalModel):
                 top_p=kwargs["top_p"],
                 api_key="nan",
                 base_url=self.base_url,
+                extra_body={"skip_special_tokens": False},
             )
             progress_text = progress_text + iter_output.choices[0].text
             finish_reason = iter_output.choices[0].finish_reason
@@ -231,6 +233,7 @@ class LiteLLMClient(LightevalModel):
             top_p=kwargs["top_p"],
             api_key="nan",
             base_url=self.base_url,
+            extra_body={"skip_special_tokens": False},
         )
 
         response = LitellmModelResponse(
