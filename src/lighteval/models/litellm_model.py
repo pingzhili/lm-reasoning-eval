@@ -205,7 +205,7 @@ class LiteLLMClient(LightevalModel):
 
             progress_text = "\n\n".join(progress_steps) + "\n\nWait, "
 
-
+            print(f"\n\nFUCKING ITER INPUT: {context + progress_text}\n\n")
             iter_output = litellm.text_completion(
                 model=kwargs["model"],
                 prompt=context + progress_text,
@@ -217,13 +217,13 @@ class LiteLLMClient(LightevalModel):
                 base_url=self.base_url,
                 extra_body={"skip_special_tokens": False},
             )
+            print(f"FUCKING ITER OUTPUT: {iter_output}\n\n")
             progress_text = progress_text + iter_output.choices[0].text
             finish_reason = iter_output.choices[0].finish_reason
             num_thinking_tokens += iter_output.usage.completion_tokens
 
         # reach thinking budget
         progress_text = "\n\n".join(progress_text.split("\n\n")[:-1])
-        print(f"\n\n\n FUCKING PROGRESS TEXT: {progress_text} \n\n\n")
 
         if "<|channel|>analysis<|message|>" in progress_text:
             thinking_text = progress_text.split("<|channel|>analysis<|message|>")[-1]
