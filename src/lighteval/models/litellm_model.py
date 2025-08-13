@@ -130,7 +130,7 @@ class LiteLLMClient(LightevalModel):
         self.hf_tokenizer = AutoTokenizer.from_pretrained(self.model)
         self.pairwise_tokenization = False
         litellm.drop_params = True
-        litellm.set_verbose = True
+        litellm.set_verbose = False
         self.prompt_manager = PromptManager(
             use_chat_template=True, tokenizer=self.tokenizer, system_prompt=config.system_prompt
         )
