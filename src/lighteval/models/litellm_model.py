@@ -241,6 +241,7 @@ class LiteLLMClient(LightevalModel):
                 )
             ]
         )
+        logger.info(response)
         return response
 
     def __call_api(self, prompt, return_logits, max_new_tokens, num_samples, stop_sequence):  # noqa: C901
