@@ -6,7 +6,7 @@ PORT=${2-8000}
 BASE_URL=http://localhost:$PORT/v1
 NUM_GPUS=$(python -c "import torch; print(torch.cuda.device_count())")
 MODEL=openai/gpt-oss-120b
-MODEL_ARGS="model_name=$MODEL,base_url=$BASE_URL,provider=sgl,api_key=\"\",generation_parameters={max_new_tokens:32768,temperature:1.0,top_p:1.0,returns_logits:false,thinking_budget:16,reasoning_effort:\"$THINKING_EFFORT\"}"
+MODEL_ARGS="model_name=$MODEL,base_url=$BASE_URL,provider=sgl,api_key=\"\",generation_parameters={max_new_tokens:32768,temperature:1.0,top_p:1.0,returns_logits:false,thinking_budget:64,reasoning_effort:\"$THINKING_EFFORT\"}"
 OUTPUT_DIR=data/evals/$MODEL-thinking-$THINKING_EFFORT-debug
 mkdir -p $OUTPUT_DIR
 #
