@@ -181,6 +181,7 @@ class LiteLLMClient(LightevalModel):
 
         finish_reason = first_output.choices[0].finish_reason
         progress_text = first_output.choices[0].text
+        num_thinking_tokens = 0
         num_repeat_steps = 0
         max_repeat_steps = 3
 
@@ -193,11 +194,15 @@ class LiteLLMClient(LightevalModel):
             else:
                 num_repeat_steps = 0
 
-            progress_text = "\n\n".join(progress_steps) + "\n\nWait, "
-
             if num_repeat_steps >= max_repeat_steps:
                 logger.warning(f"STOP thinking due to {num_repeat_steps} repeat steps of {progress_steps[-1]}.")
+                progress_text = "\n\n".join(progress_steps) + f"\n\n{thinking_terminate_token}"
                 break
+            elif num_thinking_tokens >= thinking_budget:
+                logger.warning(f"STOP thinking due to reaching thinking budget of {thinking_budget} tokens.")
+
+            progress_text = "\n\n".join(progress_steps) + "\n\nWait, "
+
 
             iter_output = litellm.text_completion(
                 model=kwargs["model"],
@@ -212,6 +217,7 @@ class LiteLLMClient(LightevalModel):
             )
             progress_text = progress_text + iter_output.choices[0].text
             finish_reason = iter_output.choices[0].finish_reason
+            num_thinking_tokens += iter_output.usage.completion_tokens
 
         # reach thinking budget
         progress_text = "\n\n".join(progress_text.split("\n\n")[:-1])
