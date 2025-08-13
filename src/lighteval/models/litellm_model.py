@@ -172,7 +172,8 @@ class LiteLLMClient(LightevalModel):
             stop=thinking_terminate_token,
             temperature=kwargs["temperature"],
             top_p=kwargs["top_p"],
-            api_key="nan"
+            api_key="nan",
+            base_url=self.base_url,
         )
 
         finish_reason = first_output.choices[0].finish_reason
@@ -201,7 +202,8 @@ class LiteLLMClient(LightevalModel):
                 stop=thinking_terminate_token,
                 temperature=kwargs["temperature"],
                 top_p=kwargs["top_p"],
-                api_key="nan"
+                api_key="nan",
+                base_url=self.base_url,
             )
             progress_text = progress_text + iter_output.choices[0].text
             finish_reason = iter_output.choices[0].finish_reason
@@ -225,7 +227,8 @@ class LiteLLMClient(LightevalModel):
             prompt=final_prompt,
             temperature=kwargs["temperature"],
             top_p=kwargs["top_p"],
-            api_key="nan"
+            api_key="nan",
+            base_url=self.base_url,
         )
 
         response = LitellmModelResponse(
