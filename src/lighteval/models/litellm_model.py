@@ -200,6 +200,8 @@ class LiteLLMClient(LightevalModel):
                 break
             elif num_thinking_tokens >= thinking_budget:
                 logger.warning(f"STOP thinking due to reaching thinking budget of {thinking_budget} tokens.")
+                progress_text = "\n\n".join(progress_steps) + f"\n\n{thinking_terminate_token}"
+                break
 
             progress_text = "\n\n".join(progress_steps) + "\n\nWait, "
 
