@@ -35,7 +35,6 @@ from lighteval.tasks.prompt_manager import PromptManager
 from lighteval.tasks.requests import Doc
 from lighteval.utils.imports import is_litellm_available
 
-
 logger = logging.getLogger(__name__)
 
 if is_litellm_available():
@@ -151,6 +150,27 @@ class LiteLLMClient(LightevalModel):
             max_new_tokens = min(max_new_tokens * 10, 32000)
         return max_new_tokens
 
+    def call_litellm_completion_with_thinking_budget(self, thinking_budget, thinking_terminate_token, **kwargs):
+        """Call LiteLLM completion with thinking budget support."""
+        # Extract key parameters
+        initial_messages = kwargs.get('messages')
+        final_max_tokens = kwargs.get('max_completion_tokens', 1024)
+
+        # First completion: Generate thinking with budget constraint
+        thinking_kwargs = kwargs.copy()
+        thinking_kwargs['max_completion_tokens'] = thinking_budget
+        thinking_kwargs['stop'] = [thinking_terminate_token]
+
+        thinking_response = litellm.completion(**thinking_kwargs)
+        thinking_text = thinking_response.choices[0].message.content or ""
+        thinking_tokens = thinking_response.usage.completion_tokens
+
+        # Check termination conditions
+        terminated_early = thinking_terminate_token in thinking_text
+
+        while True:
+            pass
+
     def __call_api(self, prompt, return_logits, max_new_tokens, num_samples, stop_sequence):  # noqa: C901
         """Make API call with retries."""
         response = LitellmModelResponse()
@@ -169,9 +189,10 @@ class LiteLLMClient(LightevalModel):
                     "logprobs": return_logits if self.provider == "openai" else None,
                     "base_url": self.base_url,
                     "n": num_samples,
-                    "caching": False, # We don't want caching with same response
+                    "caching": False,  # We don't want caching with same response
                     "api_key": self.api_key,
                 }
+                print(prompt)
 
                 if num_samples > 1 and self.generation_parameters.temperature == 0:
                     raise ValueError(
@@ -208,7 +229,7 @@ class LiteLLMClient(LightevalModel):
                         logger.warning(f"{error_string}. Returning empty response.")
                         return LitellmModelResponse()
             except Exception as e:
-                wait_time = min(64, self.API_RETRY_SLEEP * (2**attempt))  # Exponential backoff with max 64s
+                wait_time = min(64, self.API_RETRY_SLEEP * (2 ** attempt))  # Exponential backoff with max 64s
                 logger.warning(
                     f"Error in API call: {e}, waiting {wait_time} seconds before retry {attempt + 1}/{self.API_MAX_RETRY}"
                 )
@@ -218,12 +239,12 @@ class LiteLLMClient(LightevalModel):
         return LitellmModelResponse()
 
     def __call_api_parallel(
-        self,
-        prompts,
-        return_logits: bool | list[bool],
-        max_new_tokens: int | list[int] | None,
-        num_samples: int | list[int],
-        stop_sequence: list[str] | None = None,
+            self,
+            prompts,
+            return_logits: bool | list[bool],
+            max_new_tokens: int | list[int] | None,
+            num_samples: int | list[int],
+            stop_sequence: list[str] | None = None,
     ):
         results = []
 
@@ -232,22 +253,22 @@ class LiteLLMClient(LightevalModel):
         num_sampless = [num_samples for _ in prompts] if not isinstance(num_samples, list) else num_samples
         stop_sequencess = [stop_sequence for _ in prompts]
         assert (
-            len(prompts) == len(return_logitss) == len(max_new_tokenss) == len(num_sampless) == len(stop_sequencess)
+                len(prompts) == len(return_logitss) == len(max_new_tokenss) == len(num_sampless) == len(stop_sequencess)
         ), (
             f"Length of prompts, return_logitss, max_new_tokenss, num_sampless, stop_sequences, system_prompts should be the same but are {len(prompts)}, {len(return_logitss)}, {len(max_new_tokenss)}, {len(num_sampless)}, {len(stop_sequencess)}"
         )
 
         with ThreadPoolExecutor(self.CONCURENT_CALLS) as executor:
             for entry in tqdm(
-                executor.map(
-                    self.__call_api,
-                    prompts,
-                    return_logitss,
-                    max_new_tokenss,
-                    num_sampless,
-                    stop_sequencess,
-                ),
-                total=len(prompts),
+                    executor.map(
+                        self.__call_api,
+                        prompts,
+                        return_logitss,
+                        max_new_tokenss,
+                        num_sampless,
+                        stop_sequencess,
+                    ),
+                    total=len(prompts),
             ):
                 results.append(entry)
 
@@ -257,8 +278,8 @@ class LiteLLMClient(LightevalModel):
         return results
 
     def greedy_until(
-        self,
-        docs: list[Doc],
+            self,
+            docs: list[Doc],
     ) -> list[ModelResponse]:
         """
         Generates responses using a greedy decoding strategy until certain ending conditions are met.
@@ -274,11 +295,11 @@ class LiteLLMClient(LightevalModel):
         results = []
 
         for split in tqdm(
-            dataset.splits_iterator(),
-            total=dataset.num_dataset_splits,
-            desc="Splits",
-            position=0,
-            disable=self.disable_tqdm,
+                dataset.splits_iterator(),
+                total=dataset.num_dataset_splits,
+                desc="Splits",
+                position=0,
+                disable=self.disable_tqdm,
         ):
             contexts = [self.prompt_manager.prepare_prompt_api(doc) for doc in dataset]
             max_new_tokens = split[0].generation_size  # could be none
