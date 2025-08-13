@@ -191,10 +191,11 @@ class LiteLLMClient(LightevalModel):
             else:
                 num_repeat_steps = 0
 
+            progress_text = "\n\n".join(progress_steps) + "\n\nWait, "
+
             if num_repeat_steps >= max_repeat_steps:
                 logger.warning(f"STOP thinking due to {num_repeat_steps} repeat steps of {progress_steps[-1]}.")
-
-            progress_text = "\n\n".join(progress_steps) + "\n\nWait, "
+                break
 
             iter_output = litellm.text_completion(
                 model=kwargs["model"],
