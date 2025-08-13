@@ -151,11 +151,11 @@ class LiteLLMClient(LightevalModel):
             max_new_tokens = min(max_new_tokens * 10, 32000)
         return max_new_tokens
 
-    def call_litellm_completion_with_thinking_budget(self, thinking_budget, thinking_terminate_token, **kwargs):
+    def call_litellm_completion_with_thinking_budget(self, thinking_budget, thinking_terminate_token="<|end|>",
+                                                     **kwargs):
         """Call LiteLLM completion with thinking budget support."""
         # Extract key parameters
         initial_messages = kwargs["messages"]
-        final_max_tokens = kwargs["max_completion_tokens"]
 
         # First completion: Generate thinking with budget constraint
         context = self.tokenizer.apply_chat_template(
@@ -220,8 +220,6 @@ class LiteLLMClient(LightevalModel):
         final_output = litellm.text_completion(
             model=kwargs["model"],
             prompt=final_prompt,
-            max_tokens=thinking_budget,
-            stop=thinking_terminate_token,
             temperature=kwargs["temperature"],
             top_p=kwargs["top_p"],
         )
@@ -282,7 +280,13 @@ class LiteLLMClient(LightevalModel):
                     kwargs["extra_body"] = {"reasoning_effort": kwargs["reasoning_effort"]}
                     del kwargs["reasoning_effort"]
 
-                response = litellm.completion(**kwargs)
+                if self.generation_parameters.thinking_budget is None:
+                    response = litellm.completion(**kwargs)
+                else:
+                    response = self.call_litellm_completion_with_thinking_budget(
+                        thinking_budget=self.generation_parameters.thinking_budget,
+                        **kwargs,
+                    )
 
                 # If response is empty, retry without caching (maybe the error is recoverable and solved with a retry)
                 if response.choices[0].message.content is None:

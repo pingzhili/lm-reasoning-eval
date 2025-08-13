@@ -1,12 +1,12 @@
 export WANDB_API_KEY=2b60f655a687ad1161d31f0002256865e1ace428
 export WANDB_PROJECT=llm-reasoning
 
-THINKING_EFFORT=${1-low}
+THINKING_EFFORT=${1-high}
 PORT=${2-8000}
 BASE_URL=http://localhost:$PORT/v1
 NUM_GPUS=$(python -c "import torch; print(torch.cuda.device_count())")
 MODEL=openai/gpt-oss-120b
-MODEL_ARGS="model_name=$MODEL,base_url=$BASE_URL,api_key=\"\",generation_parameters={max_new_tokens:32768,temperature:1.0,top_p:1.0,returns_logits:false,reasoning_effort:\"$THINKING_EFFORT\"}"
+MODEL_ARGS="model_name=$MODEL,base_url=$BASE_URL,api_key=\"\",generation_parameters={max_new_tokens:32768,temperature:1.0,top_p:1.0,returns_logits:false,thinking_budget:1024,reasoning_effort:\"$THINKING_EFFORT\"}"
 OUTPUT_DIR=data/evals/$MODEL-thinking-$THINKING_EFFORT-debug
 mkdir -p $OUTPUT_DIR
 #
