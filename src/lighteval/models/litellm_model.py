@@ -34,6 +34,7 @@ from lighteval.models.utils import ModelConfig
 from lighteval.tasks.prompt_manager import PromptManager
 from lighteval.tasks.requests import Doc
 from lighteval.utils.imports import is_litellm_available
+from transformers import AutoTokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,6 @@ else:
     litellm = Mock()
     encode = Mock()
     LitellmModelResponse = Mock()
-
 
 class LiteLLMModelConfig(ModelConfig):
     """
@@ -126,6 +126,7 @@ class LiteLLMClient(LightevalModel):
         self.CONCURENT_CALLS = 10  # 100 leads to hitting Anthropic rate limits
 
         self._tokenizer = encode
+        self.hf_tokenizer = AutoTokenizer.from_pretrained(self.model)
         self.pairwise_tokenization = False
         litellm.drop_params = True
         litellm.set_verbose = False
@@ -158,7 +159,7 @@ class LiteLLMClient(LightevalModel):
         initial_messages = kwargs["messages"]
 
         # First completion: Generate thinking with budget constraint
-        context = self.tokenizer.apply_chat_template(
+        context = self.hf_tokenizer.apply_chat_template(
             initial_messages,
             tokenize=False,
             add_generation_prompt=True,
@@ -210,7 +211,7 @@ class LiteLLMClient(LightevalModel):
         initial_messages.append({
             "role": "assistant", "thinking": thinking_text, "content": "[CONTENT_PLACEHOLDER]"
         })
-        final_prompt = self.tokenizer.apply_chat_template(
+        final_prompt = self.hf_tokenizer.apply_chat_template(
             initial_messages,
             reasoning_effort=self.reasoning_effort,
             tokenize=False,
