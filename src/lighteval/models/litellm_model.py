@@ -34,6 +34,7 @@ from lighteval.models.utils import ModelConfig
 from lighteval.tasks.prompt_manager import PromptManager
 from lighteval.tasks.requests import Doc
 from lighteval.utils.imports import is_litellm_available
+
 from transformers import AutoTokenizer
 
 logger = logging.getLogger(__name__)
@@ -129,7 +130,7 @@ class LiteLLMClient(LightevalModel):
         self.hf_tokenizer = AutoTokenizer.from_pretrained(self.model)
         self.pairwise_tokenization = False
         litellm.drop_params = True
-        litellm.set_verbose = False
+        litellm.set_verbose = True
         self.prompt_manager = PromptManager(
             use_chat_template=True, tokenizer=self.tokenizer, system_prompt=config.system_prompt
         )
