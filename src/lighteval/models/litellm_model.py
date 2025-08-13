@@ -131,6 +131,7 @@ class LiteLLMClient(LightevalModel):
         self.pairwise_tokenization = False
         litellm.drop_params = True
         litellm.set_verbose = False
+        litellm.suppress_debug_info = True
         self.prompt_manager = PromptManager(
             use_chat_template=True, tokenizer=self.tokenizer, system_prompt=config.system_prompt
         )
