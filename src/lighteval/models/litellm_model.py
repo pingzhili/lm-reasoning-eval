@@ -118,8 +118,7 @@ class LiteLLMClient(LightevalModel):
         self.base_url = config.base_url
         self.api_key = config.api_key
         self.generation_parameters = config.generation_parameters
-        self.reasoning_effort = config.reasoning_effort
-        self.enable_thinking = config.enable_thinking
+        self.reasoning_effort = self.generation_parameters.reasoning_effort
 
         self.API_MAX_RETRY = 5
         self.API_RETRY_SLEEP = 3
@@ -164,7 +163,6 @@ class LiteLLMClient(LightevalModel):
             tokenize=False,
             add_generation_prompt=True,
             reasoning_effort=self.reasoning_effort,
-            enable_thinking=self.enable_thinking,
         )
         first_output = litellm.text_completion(
             model=kwargs["model"],
