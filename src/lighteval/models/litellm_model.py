@@ -41,7 +41,7 @@ if is_litellm_available():
     import litellm
     from litellm import encode
     from litellm.caching.caching import Cache
-    from litellm.utils import ModelResponse as LitellmModelResponse
+    from litellm.utils import Choices, Message, ModelResponse as LitellmModelResponse
 
     logging.getLogger("LiteLLM").setLevel(logging.WARNING)
     logging.getLogger("LiteLLM").handlers.clear()
@@ -118,6 +118,8 @@ class LiteLLMClient(LightevalModel):
         self.base_url = config.base_url
         self.api_key = config.api_key
         self.generation_parameters = config.generation_parameters
+        self.reasoning_effort = config.reasoning_effort
+        self.enable_thinking = config.enable_thinking
 
         self.API_MAX_RETRY = 5
         self.API_RETRY_SLEEP = 3
@@ -153,23 +155,93 @@ class LiteLLMClient(LightevalModel):
     def call_litellm_completion_with_thinking_budget(self, thinking_budget, thinking_terminate_token, **kwargs):
         """Call LiteLLM completion with thinking budget support."""
         # Extract key parameters
-        initial_messages = kwargs.get('messages')
-        final_max_tokens = kwargs.get('max_completion_tokens', 1024)
+        initial_messages = kwargs["messages"]
+        final_max_tokens = kwargs["max_completion_tokens"]
 
         # First completion: Generate thinking with budget constraint
-        thinking_kwargs = kwargs.copy()
-        thinking_kwargs['max_completion_tokens'] = thinking_budget
-        thinking_kwargs['stop'] = [thinking_terminate_token]
+        context = self.tokenizer.apply_chat_template(
+            initial_messages,
+            tokenize=False,
+            add_generation_prompt=True,
+            reasoning_effort=self.reasoning_effort,
+            enable_thinking=self.enable_thinking,
+        )
+        first_output = litellm.text_completion(
+            model=kwargs["model"],
+            prompt=context,
+            max_tokens=thinking_budget,
+            stop=thinking_terminate_token,
+            temperature=kwargs["temperature"],
+            top_p=kwargs["top_p"],
+        )
 
-        thinking_response = litellm.completion(**thinking_kwargs)
-        thinking_text = thinking_response.choices[0].message.content or ""
-        thinking_tokens = thinking_response.usage.completion_tokens
+        finish_reason = first_output.choices[0].finish_reason
+        progress_text = first_output.choices[0].text
+        num_repeat_steps = 0
+        max_repeat_steps = 3
 
-        # Check termination conditions
-        terminated_early = thinking_terminate_token in thinking_text
+        while finish_reason != "length":
+            # if not thinking enough, go ahead
+            # remove thinking end
+            progress_steps = progress_text.split("\n\n")
+            if len(progress_steps) > 1 and progress_steps[-1] == progress_steps[-2]:
+                num_repeat_steps += 1
+            else:
+                num_repeat_steps = 0
 
-        while True:
-            pass
+            if num_repeat_steps >= max_repeat_steps:
+                logger.warning(f"STOP thinking due to {num_repeat_steps} repeat steps of {progress_steps[-1]}.")
+
+            progress_text = "\n\n".join(progress_steps) + "\n\nWait, "
+
+            iter_output = litellm.text_completion(
+                model=kwargs["model"],
+                prompt=context + progress_text,
+                max_tokens=thinking_budget,
+                stop=thinking_terminate_token,
+                temperature=kwargs["temperature"],
+                top_p=kwargs["top_p"],
+            )
+            progress_text = progress_text + iter_output.choices[0].text
+            finish_reason = iter_output.choices[0].finish_reason
+
+        # reach thinking budget
+        progress_text = "\n\n".join(progress_text.split("\n\n")[:-1])
+        thinking_text = progress_text.split("<|channel|>analysis<|message|>")[-1]
+
+        initial_messages.append({
+            "role": "assistant", "thinking": thinking_text, "content": "[CONTENT_PLACEHOLDER]"
+        })
+        final_prompt = self.tokenizer.apply_chat_template(
+            initial_messages,
+            reasoning_effort=self.reasoning_effort,
+            tokenize=False,
+            continue_final_message=True
+        )
+        final_prompt.replace("[CONTENT_PLACEHOLDER]", "")
+        final_output = litellm.text_completion(
+            model=kwargs["model"],
+            prompt=final_prompt,
+            max_tokens=thinking_budget,
+            stop=thinking_terminate_token,
+            temperature=kwargs["temperature"],
+            top_p=kwargs["top_p"],
+        )
+
+        response = LitellmModelResponse(
+            choices=[
+                Choices(
+                    finish_reason='stop',
+                    index=0,
+                    message=Message(
+                        reasoning_content=thinking_text,
+                        content=final_output.choices[0].text,
+                        role='assistant'
+                    )
+                )
+            ]
+        )
+        return response
 
     def __call_api(self, prompt, return_logits, max_new_tokens, num_samples, stop_sequence):  # noqa: C901
         """Make API call with retries."""
@@ -192,7 +264,6 @@ class LiteLLMClient(LightevalModel):
                     "caching": False,  # We don't want caching with same response
                     "api_key": self.api_key,
                 }
-                print(prompt)
 
                 if num_samples > 1 and self.generation_parameters.temperature == 0:
                     raise ValueError(
