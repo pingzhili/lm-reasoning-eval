@@ -223,6 +223,7 @@ class LiteLLMClient(LightevalModel):
 
         # reach thinking budget
         progress_text = "\n\n".join(progress_text.split("\n\n")[:-1])
+        print(f"\n\n\n FUCKING PROGRESS TEXT: {progress_text} \n\n\n")
         thinking_text = progress_text.split("<|channel|>analysis<|message|>")[-1]
 
         initial_messages.append({
