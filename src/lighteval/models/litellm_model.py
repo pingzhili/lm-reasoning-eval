@@ -224,7 +224,11 @@ class LiteLLMClient(LightevalModel):
         # reach thinking budget
         progress_text = "\n\n".join(progress_text.split("\n\n")[:-1])
         print(f"\n\n\n FUCKING PROGRESS TEXT: {progress_text} \n\n\n")
-        thinking_text = progress_text.split("<|channel|>analysis<|message|>")[-1]
+
+        if "<|channel|>analysis<|message|>" in progress_text:
+            thinking_text = progress_text.split("<|channel|>analysis<|message|>")[-1]
+        else:
+            thinking_text = progress_text
 
         initial_messages.append({
             "role": "assistant", "thinking": thinking_text, "content": "[CONTENT_PLACEHOLDER]"
@@ -243,6 +247,7 @@ class LiteLLMClient(LightevalModel):
             top_p=kwargs["top_p"],
             api_key="nan",
             base_url=self.base_url,
+            max_tokens=kwargs["max_completion_tokens"],
             extra_body={"skip_special_tokens": False},
         )
         print()
