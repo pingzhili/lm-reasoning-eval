@@ -244,6 +244,7 @@ class LiteLLMClient(LightevalModel):
             base_url=self.base_url,
             extra_body={"skip_special_tokens": False},
         )
+        print("FUCKING FINAL OUTPUT", final_output)
 
         response = LitellmModelResponse(
             choices=[
