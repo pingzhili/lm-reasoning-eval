@@ -56,6 +56,7 @@ else:
     encode = Mock()
     LitellmModelResponse = Mock()
 
+
 class LiteLLMModelConfig(ModelConfig):
     """
     Configuration class for LiteLLM unified API client.
@@ -154,8 +155,9 @@ class LiteLLMClient(LightevalModel):
             max_new_tokens = min(max_new_tokens * 10, 32000)
         return max_new_tokens
 
-    def call_litellm_completion_with_thinking_budget(self, thinking_budget, thinking_terminate_token="<|end|>",
-                                                     **kwargs):
+    def call_litellm_completion_with_thinking_budget(
+            self, thinking_budget, thinking_terminate_token="<|end|>", **kwargs
+    ):
         """Call LiteLLM completion with thinking budget support."""
         # Extract key parameters
         initial_messages = kwargs["messages"]
@@ -275,6 +277,25 @@ class LiteLLMClient(LightevalModel):
         logger.info(response)
         return response
 
+    def call_litellm_completion_without_thinking(self, **kwargs):
+        context = self.hf_tokenizer.apply_chat_template(
+            kwargs["messages"],
+            tokenize=False,
+            add_generation_prompt=True,
+            reasoning_effort=self.reasoning_effort,
+        )
+        outputs = litellm.text_completion(
+            model=kwargs["model"],
+            prompt=context,
+            max_tokens=kwargs["max_completion_tokens"],
+            temperature=kwargs["temperature"],
+            top_p=kwargs["top_p"],
+            api_key="nan",
+            base_url=self.base_url,
+            extra_body={"skip_special_tokens": False},
+        )
+        pass
+
     def __call_api(self, prompt, return_logits, max_new_tokens, num_samples, stop_sequence):  # noqa: C901
         """Make API call with retries."""
         response = LitellmModelResponse()
@@ -317,6 +338,9 @@ class LiteLLMClient(LightevalModel):
 
                 if self.generation_parameters.thinking_budget is None:
                     response = litellm.completion(**kwargs)
+                elif self.reasoning_effort == "no":
+                    # enforce to skip thinking
+                    response = self.call_litellm_completion_without_thinking(**kwargs)
                 else:
                     response = self.call_litellm_completion_with_thinking_budget(
                         thinking_budget=self.generation_parameters.thinking_budget,
