@@ -10,11 +10,11 @@ MODEL_ARGS="model_name=$MODEL,dtype=bfloat16,max_model_length=32768,gpu_memory_u
 OUTPUT_DIR=/mnt/task_wrapper/user_output/artifacts/$MODEL-thinking-budget-$THINKING_BUDGET
 mkdir -p $OUTPUT_DIR
 
-
-# AIME 2024
-TASK=aime24
-lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%m%d_%H%M%S)_$TASK.log"
+#
+## AIME 2024
+#TASK=aime24
+#lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+#    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%m%d_%H%M%S)_$TASK.log"
 
 # AIME 2025
 TASK=aime25
