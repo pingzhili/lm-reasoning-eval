@@ -3,7 +3,7 @@ export WANDB_PROJECT=llm-reasoning
 export VLLM_WORKER_MULTIPROC_METHOD=spawn # Required for vLLM
 
 NUM_GPUS=$(python -c "import torch; print(torch.cuda.device_count())")
-MODEL=Qwen/Qwen3-8B
+MODEL=Qwen/Qwen3-235B-A22B-FP8
 MODEL_ARGS="model_name=$MODEL,dtype=bfloat16,max_model_length=32768,gpu_memory_utilization=0.8,generation_parameters={max_new_tokens:32768,temperature:0.6,top_p:0.95,returns_logits:false},use_chat_template=true,tensor_parallel_size=2,tensor_parallel_size=$NUM_GPUS,enable_thinking=true,self_judge_thinking=true"
 OUTPUT_DIR=/mnt/task_wrapper/user_output/artifacts/$MODEL-self-judge
 mkdir -p $OUTPUT_DIR
