@@ -8,20 +8,20 @@ MODEL_ARGS="model_name=$MODEL,dtype=bfloat16,max_model_length=32768,gpu_memory_u
 OUTPUT_DIR=/mnt/task_wrapper/user_output/artifacts/$MODEL-self-judge
 mkdir -p $OUTPUT_DIR
 
-# AIME 2025
-TASK=aime25
-lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_self_judge_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+## AIME 2025
+#TASK=aime25
+#lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+#    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_self_judge_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
 # MATH
 TASK=math_500
 lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
     --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_self_judge_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
-# GSM8K
-TASK=gsm8k
-lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
-    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_self_judge_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
+## GSM8K
+#TASK=gsm8k
+#lighteval vllm $MODEL_ARGS "lighteval|$TASK|0|0" \
+#    --output-dir $OUTPUT_DIR --save-details  2>&1 | tee "log_self_judge_$(date +%Y%m%d_%H%M%S)_${RANDOM}.log"
 
 # GPQA Diamond
 TASK=gpqa:diamond
