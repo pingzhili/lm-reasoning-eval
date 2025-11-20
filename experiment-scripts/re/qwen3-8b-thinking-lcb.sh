@@ -9,5 +9,6 @@ OUTPUT_DIR=data/evals/$MODEL-thinking
 mkdir -p $OUTPUT_DIR
 
 # LCB code gen
-lighteval vllm $MODEL_ARGS "extended|lcb:codegeneration|0|0" \
+TASK=lcb:codegeneration
+lighteval vllm $MODEL_ARGS "extended|$TASK|0|0" \
     --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%m%d_%H%M%S)_$TASK.log"
