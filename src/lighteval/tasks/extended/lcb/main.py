@@ -41,6 +41,7 @@ from lighteval.tasks.extended.lcb.codegen_metrics import (
     extract_code,
     translate_private_test_cases,
 )
+from lighteval.models.model_output import ModelResponse
 from lighteval.tasks.lighteval_task import Doc, LightevalTaskConfig
 from lighteval.tasks.requests import SamplingMethod
 
@@ -79,17 +80,19 @@ def lcb_codegeneration_prompt_fn(line, task_name: str = "lcb:codegeneration") ->
     )
 
 
-def codegen_metric(predictions: list[str], formatted_doc: Doc, **kwargs) -> float:
+def codegen_metric(model_response: ModelResponse, doc: Doc, **kwargs) -> float:
     """Estimates the Pass@1 metric for the code generation task.
     Extract the code from each prediction, Runs it for each sample and generations,
     and computes the Pass@1 over the outputs.
     """
+    # Extract predictions from model_response
+    predictions = model_response.text
     # Extract generated code snippets
     generated_code_snippets = [[extract_code(pred) for pred in predictions]]  # noqa: F841
     evaluation_sample = {  # noqa: F841
-        "inputs": formatted_doc.specific["inputs"],
-        "outputs": formatted_doc.specific["outputs"],
-        "fn_name": formatted_doc.specific["fn_name"],
+        "inputs": doc.specific["inputs"],
+        "outputs": doc.specific["outputs"],
+        "fn_name": doc.specific["fn_name"],
     }
     # This is a list of lists because
     evaluation_sample = [{"input_output": json.dumps(evaluation_sample)}]
