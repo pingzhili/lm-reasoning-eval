@@ -8,7 +8,12 @@ MODEL_ARGS="model_name=$MODEL,dtype=bfloat16,max_model_length=32768,gpu_memory_u
 OUTPUT_DIR=/mnt/task_wrapper/user_output/artifacts/$MODEL-thinking
 mkdir -p $OUTPUT_DIR
 
-# HumanEval
-TASK=humaneval
-lighteval vllm $MODEL_ARGS "helm|$TASK|0|0" \
+# LCB code gen
+TASK=lcb:codegeneration
+lighteval vllm $MODEL_ARGS "extended|$TASK|0|0" \
     --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%m%d_%H%M%S)_$TASK.log"
+
+## HumanEval
+#TASK=humaneval
+#lighteval vllm $MODEL_ARGS "helm|$TASK|0|0" \
+#    --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%m%d_%H%M%S)_$TASK.log"

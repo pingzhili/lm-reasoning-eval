@@ -104,7 +104,7 @@ def codegen_metric(predictions: list[str], formatted_doc: Doc, **kwargs) -> floa
 
 
 lcb_codegen_metric = SampleLevelMetric(
-    metric_name="codegen_pass@1:16",  # This is the way of informing the number of generations currently
+    metric_name="codegen_pass@1",  # This is the way of informing the number of generations currently
     category=SamplingMethod.GENERATIVE,
     higher_is_better=True,
     sample_level_fn=codegen_metric,
