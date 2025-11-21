@@ -11,4 +11,5 @@ mkdir -p $OUTPUT_DIR
 # LCB code gen
 TASK=lcb:codegeneration
 lighteval vllm $MODEL_ARGS "extended|$TASK|0|0" \
+    --max-samples 10 \
     --output-dir $OUTPUT_DIR --save-details 2>&1 | tee "logs/log_$(date +%m%d_%H%M%S)_$TASK.log"
